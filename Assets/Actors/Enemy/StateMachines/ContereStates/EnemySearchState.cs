@@ -27,6 +27,10 @@ public class EnemySearchState : EnemyState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
+        if (enemy.isAggroed)
+        {
+            enemy.StateMachine.ChangeState(enemy.ChaseState);
+        }
     }
 
     public override void PhisicsUpdate()

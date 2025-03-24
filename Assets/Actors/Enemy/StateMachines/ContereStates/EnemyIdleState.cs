@@ -2,9 +2,6 @@ using UnityEngine;
 
 public class EnemyIdleState : EnemyState
 {
-    private Vector3 _targetPos;
-    private Vector3 _direction;
-
 
     public EnemyIdleState(Enemy enemy, EnemyStateMachine enemyStateMachine) : base(enemy, enemyStateMachine)
     {
@@ -18,6 +15,7 @@ public class EnemyIdleState : EnemyState
     public override void EnterState()
     {
         base.EnterState();
+        Debug.Log("Enter Idle State");
     }
 
     public override void ExitState()

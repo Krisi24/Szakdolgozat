@@ -8,6 +8,7 @@ public class Enemy : MonoBehaviour, IDamagable, IEnemyMovable
     [field: SerializeField] private float MaxHealth { get; set; } = 100f;
     [field: SerializeField] private float stopDistance;
     [field: SerializeField] private float speed;
+    [field: SerializeField] private Transform? patrolEndpoint;
     public GameObject PlayerTarget { get; set; }
 
     public Animator anim { get; set; }
@@ -22,6 +23,7 @@ public class Enemy : MonoBehaviour, IDamagable, IEnemyMovable
 
 
     public Vector3 playerLastPosition { get; set; }
+    // when seen player
 
     public bool IsPlayerSeen { get; set; }
 
@@ -35,6 +37,7 @@ public class Enemy : MonoBehaviour, IDamagable, IEnemyMovable
     public EnemyAttackState AttackState { get; set; }
     public EnemyDieState DieState { get; set; }
     public EnemySearchState SearchState { get; set; }
+    public EnemyPatrolState PatrolState { get; set; }
     public bool isAggroed { get; set; }
 
     #endregion
@@ -67,7 +70,15 @@ public class Enemy : MonoBehaviour, IDamagable, IEnemyMovable
         CurrentHealth = MaxHealth;
         RB = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
-        StateMachine.Initalize(IdleState);
+
+        if (patrolEndpoint == null)
+        {
+            StateMachine.Initalize(IdleState);
+        } else
+        {
+            PatrolState = new EnemyPatrolState(this, StateMachine, patrolEndpoint);
+            StateMachine.Initalize(PatrolState);
+        }
     }
     private void AnimationTriggerEvent(AnimationTriggerType triggerType)
     {
@@ -134,6 +145,29 @@ public class Enemy : MonoBehaviour, IDamagable, IEnemyMovable
             transform.position += direction * speed * Time.deltaTime;
 
             transform.LookAt(new Vector3(playerLastPosition.x, transform.position.y, playerLastPosition.z));
+
+            return false;
+        }
+        return true;
+    }
+
+    public bool MoveEnemyToPos(Vector3 pos)
+    {
+        float distance = Vector3.Distance(transform.position, pos);
+
+        // Ha a távolság nagyobb, mint a stopDistance, akkor mozgás
+        if (distance > 2f)
+        {
+            // A célpont irányának kiszámítása
+            Vector3 direction = (pos - transform.position).normalized;
+            Vector3 movement = direction * speed * Time.deltaTime;
+            // Mozgás a célpont irányába
+            transform.position += movement;
+
+            //transform.LookAt(new Vector3(pos.x, transform.position.y, pos.z));
+
+            Quaternion toRotation = Quaternion.LookRotation(movement, Vector3.up);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, 1200 * Time.deltaTime);
 
             return false;
         }
