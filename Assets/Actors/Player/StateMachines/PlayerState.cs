@@ -3,11 +3,11 @@ using UnityEngine;
 public class PlayerState
 {
 
-    protected PlayerHandler player;
+    protected Player player;
     protected PlayerStateMachine playerStateMachine;
     protected Animator playerAnim;
 
-    public PlayerState(PlayerHandler player, PlayerStateMachine playerStateMachine, Animator playerAnim)
+    public PlayerState(Player player, PlayerStateMachine playerStateMachine, Animator playerAnim)
     {
         this.player = player;
         this.playerStateMachine = playerStateMachine;

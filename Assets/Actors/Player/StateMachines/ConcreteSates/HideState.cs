@@ -1,10 +1,12 @@
 using UnityEngine;
 
-public class DieState : PlayerState
+public class HideState : PlayerState
 {
+    private Vector3 _targetPos;
+    private Vector3 _direction;
 
 
-    public DieState(PlayerHandler player, PlayerStateMachine playerStateMachine, Animator playerAnim) : base(player, playerStateMachine, playerAnim)
+    public HideState(Player player, PlayerStateMachine playerStateMachine, Animator playerAnim) : base(player, playerStateMachine, playerAnim)
     {
     }
 
@@ -16,12 +18,15 @@ public class DieState : PlayerState
     public override void EnterState()
     {
         base.EnterState();
-        player.Die();
+        playerAnim.SetBool("isCrouch", true);
+        player.SetSpeedToCrouch();
     }
 
     public override void ExitState()
     {
         base.ExitState();
+        playerAnim.SetBool("isCrouch", false);
+        player.SetSpeedToRun();
     }
 
     public override void FrameUpdate()

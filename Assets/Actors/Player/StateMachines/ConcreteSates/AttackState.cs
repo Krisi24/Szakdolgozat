@@ -13,7 +13,7 @@ public class AttackState : PlayerState
     public Quaternion attackBoxRotation = new Quaternion();
 
 
-    public AttackState(PlayerHandler player, PlayerStateMachine playerStateMachine, Animator playerAnim, Transform AttackBox) : base(player, playerStateMachine, playerAnim)
+    public AttackState(Player player, PlayerStateMachine playerStateMachine, Animator playerAnim, Transform AttackBox) : base(player, playerStateMachine, playerAnim)
     {
         this.AttackBox = AttackBox;
     }

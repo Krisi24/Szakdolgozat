@@ -8,7 +8,7 @@ public class RollState : PlayerState
     private float nextRollTime = 0f;
     private float coolDownTime = 0.7f;
 
-    public RollState(PlayerHandler player, PlayerStateMachine playerStateMachine, Animator playerAnim) : base(player, playerStateMachine, playerAnim)
+    public RollState(Player player, PlayerStateMachine playerStateMachine, Animator playerAnim) : base(player, playerStateMachine, playerAnim)
     {
     }
 

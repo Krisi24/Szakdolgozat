@@ -60,7 +60,7 @@ public class EnemyAttackState : EnemyState
             //Debug.Log("hit enemy by AI: " + enemy.name);
             if (!enemy.isTrigger)
             {
-                PlayerHandler enemyComponent = enemy.GetComponent<PlayerHandler>();  // Ellenõrizzük, hogy van-e PLayer
+                Player enemyComponent = enemy.GetComponent<Player>();  // Ellenõrizzük, hogy van-e PLayer
                 if (enemyComponent != null)
                 {
                     enemyComponent.Damage(damage);

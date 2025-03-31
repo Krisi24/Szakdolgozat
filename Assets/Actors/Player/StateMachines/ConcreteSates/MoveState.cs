@@ -1,12 +1,9 @@
 using UnityEngine;
 
-public class HideState : PlayerState
+public class MoveState : PlayerState
 {
-    private Vector3 _targetPos;
-    private Vector3 _direction;
 
-
-    public HideState(PlayerHandler player, PlayerStateMachine playerStateMachine, Animator playerAnim) : base(player, playerStateMachine, playerAnim)
+    public MoveState(Player player, PlayerStateMachine playerStateMachine, Animator playerAnim) : base(player, playerStateMachine, playerAnim)
     {
     }
 
@@ -18,25 +15,26 @@ public class HideState : PlayerState
     public override void EnterState()
     {
         base.EnterState();
-        playerAnim.SetBool("isCrouch", true);
-        player.SetSpeedToCrouch();
+        
     }
 
     public override void ExitState()
     {
         base.ExitState();
-        playerAnim.SetBool("isCrouch", false);
-        player.SetSpeedToRun();
     }
 
     public override void FrameUpdate()
     {
         base.FrameUpdate();
+        
     }
 
     public override void PhisicsUpdate()
     {
         base.PhisicsUpdate();
-        player.PlayerMove();
+        if (player.GetMoveInput() != Vector3.zero)
+        {
+            player.Move(player.GetMoveInput(), 10);
+        }
     }
 }

@@ -1,9 +1,8 @@
-using System;
 using UnityEngine;
-using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
+using UnityEngine.Windows;
 
-public class PlayerHandler : MonoBehaviour, IDamagable
+public class Player : MonoBehaviour, IDamagable
 {
 
     Rigidbody rb; 
@@ -15,17 +14,23 @@ public class PlayerHandler : MonoBehaviour, IDamagable
     [SerializeField] private HealthBar healthbar;
     private Animator anim;
     public Transform AttackBox;
-
     public float MaxHealth { get; set; } = 500f;
     public float CurrentHealth { get; set; }
 
-    InputAction hideAction;
-    InputAction rollAcion;
+    #region Input Actions
+
+    [SerializeField] private InputActionAsset inputActions;
+    private InputAction moveAction;
+    private InputAction crouchAction;
+    private InputAction rollAction;
+    private InputAction attackAction;
+
+    #endregion
 
     #region stateMachine variables
 
     public PlayerStateMachine StateMachine { get; set; }
-    public IdleState IdleState { get; set; }
+    public MoveState IdleState { get; set; }
     public RollState RollState { get; set; }
     public AttackState AttackState { get; set; }
     public DieState DieState { get; set; }
@@ -35,8 +40,6 @@ public class PlayerHandler : MonoBehaviour, IDamagable
 
     private void Start()
     {
-        hideAction = InputSystem.actions.FindAction("Crouch");
-        rollAcion = InputSystem.actions.FindAction("Roll");
         rb = GetComponent<Rigidbody>();
         StateMachine.Initalize(IdleState);
         CurrentHealth = MaxHealth;
@@ -50,12 +53,34 @@ public class PlayerHandler : MonoBehaviour, IDamagable
     private void Awake()
     {
         anim = GetComponent<Animator>();
+
         StateMachine = new PlayerStateMachine();
-        IdleState = new IdleState(this, StateMachine, anim);
+        IdleState = new MoveState(this, StateMachine, anim);
         RollState = new RollState(this, StateMachine, anim);
         AttackState = new AttackState(this, StateMachine, anim, AttackBox);
         DieState = new DieState(this, StateMachine, anim);
         HideState = new HideState(this, StateMachine, anim);
+
+        var playerMap = inputActions.FindActionMap("Player", true);
+        moveAction = playerMap.FindAction("Move", true);
+        crouchAction = playerMap.FindAction("Crouch", true);
+        rollAction = playerMap.FindAction("Roll", true);
+        attackAction = playerMap.FindAction("Attack", true);
+    }
+
+    void OnEnable()
+    {
+        moveAction.Enable();
+        crouchAction.Enable();
+        rollAction.Enable();
+        attackAction.Enable();
+    }
+    void OnDisable()
+    {
+        moveAction.Disable();
+        crouchAction.Disable();
+        rollAction.Disable();
+        attackAction.Disable();
     }
 
     public void SetSpeedToRun()
@@ -78,29 +103,6 @@ public class PlayerHandler : MonoBehaviour, IDamagable
 
     private void Update()
     {
-        if (rollAcion.WasPressedThisFrame() && RollState.IsUsable())
-        {
-            StateMachine.ChangeState(RollState);
-        }
-        else if (Input.GetMouseButtonDown(0) && AttackState.IsUsable())
-        {
-            if(StateMachine.CurrentPlayerState == HideState)
-            {
-                StateMachine.ChangeState(IdleState);
-            }
-            anim.SetBool("isMoving", false);
-            StateMachine.ChangeState(AttackState);
-        } else if (hideAction.WasPressedThisFrame())
-        {
-            if ( StateMachine.CurrentPlayerState == HideState)
-            {
-                StateMachine.ChangeState(IdleState);
-            }
-            else
-            {
-                StateMachine.ChangeState(HideState);
-            }
-        }
         StateMachine.CurrentPlayerState.FrameUpdate();
     }
 
@@ -136,21 +138,27 @@ public class PlayerHandler : MonoBehaviour, IDamagable
         Debug.Log("You're dead!");
     }
 
-    public void PlayerMove()
+    public Vector3 GetMoveInput()
     {
-        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
-        {
-            anim.SetBool("isMoving", true);
-            Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized * playerSpeed * 20000;
-            rb.AddForce(movement);
-            Quaternion toRotation = Quaternion.LookRotation(movement, Vector3.up);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
-        }
-        else
-        {
-            
-            anim.SetBool("isMoving", false);
-        }
+        return new Vector3(moveAction.ReadValue<Vector2>().x, 0, moveAction.ReadValue<Vector2>().y);
+    }
+
+    public void Move(Vector3 direction, float speed)
+    {
+        Vector3 velocity = direction * speed * 20000;
+        rb.AddForce(velocity, ForceMode.Force);
+        LookDirection(velocity);
+    }
+
+    public void LookDirection(Vector3 velocity)
+    {
+        Quaternion toRotation = Quaternion.LookRotation(velocity, Vector3.up);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
+    }
+
+    public void Stop()
+    {
+        
     }
 
     public void PlayerAddForce(Vector3 force)

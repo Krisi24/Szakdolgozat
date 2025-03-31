@@ -1,9 +1,10 @@
 using UnityEngine;
 
-public class IdleState : PlayerState
+public class DieState : PlayerState
 {
 
-    public IdleState(PlayerHandler player, PlayerStateMachine playerStateMachine, Animator playerAnim) : base(player, playerStateMachine, playerAnim)
+
+    public DieState(Player player, PlayerStateMachine playerStateMachine, Animator playerAnim) : base(player, playerStateMachine, playerAnim)
     {
     }
 
@@ -15,7 +16,7 @@ public class IdleState : PlayerState
     public override void EnterState()
     {
         base.EnterState();
-        
+        player.Die();
     }
 
     public override void ExitState()
@@ -26,12 +27,10 @@ public class IdleState : PlayerState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
-        
     }
 
     public override void PhisicsUpdate()
     {
         base.PhisicsUpdate();
-        player.PlayerMove();
     }
 }
