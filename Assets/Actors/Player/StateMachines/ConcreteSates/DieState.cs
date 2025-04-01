@@ -4,13 +4,8 @@ public class DieState : PlayerState
 {
 
 
-    public DieState(Player player, PlayerStateMachine playerStateMachine, Animator playerAnim) : base(player, playerStateMachine, playerAnim)
+    public DieState(Player player) : base(player)
     {
-    }
-
-    public override void AnimationTriggerEvent(Enemy.AnimationTriggerType triggerType)
-    {
-        base.AnimationTriggerEvent(triggerType);
     }
 
     public override void EnterState()

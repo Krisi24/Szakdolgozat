@@ -13,14 +13,9 @@ public class AttackState : PlayerState
     public Quaternion attackBoxRotation = new Quaternion();
 
 
-    public AttackState(Player player, PlayerStateMachine playerStateMachine, Animator playerAnim, Transform AttackBox) : base(player, playerStateMachine, playerAnim)
+    public AttackState(Player player, PlayerStateMachine playerStateMachine) : base(player)
     {
         this.AttackBox = AttackBox;
-    }
-
-    public override void AnimationTriggerEvent(Enemy.AnimationTriggerType triggerType)
-    {
-        base.AnimationTriggerEvent(triggerType);
     }
 
     public override void EnterState()
@@ -55,12 +50,9 @@ public class AttackState : PlayerState
 
     private IEnumerator WaitForAttackToEnd()
     {
-        playerAnim.SetBool("isBasicAttack", true);
         nextfireTime = Time.time + cooldownTime;
         Attack();
         yield return new WaitForSeconds(0.6f); // Megvárja a támadás végét
-        playerAnim.SetBool("isBasicAttack", false);
-        playerStateMachine.ChangeState(player.IdleState);
     }
 
     void Attack()

@@ -1,38 +1,25 @@
 using UnityEngine;
-using System.Collections;
 
 public class RollState : PlayerState
 {
-    private float startTime;
-    private float waitStartTime = 0.2f;
     private float nextRollTime = 0f;
-    private float coolDownTime = 0.7f;
+    private float coolDownTime = 1f;
 
-    public RollState(Player player, PlayerStateMachine playerStateMachine, Animator playerAnim) : base(player, playerStateMachine, playerAnim)
+    public RollState(Player player) : base(player)
     {
-    }
-
-    public override void AnimationTriggerEvent(Enemy.AnimationTriggerType triggerType)
-    {
-        base.AnimationTriggerEvent(triggerType);
     }
 
     public override void EnterState()
     {
         base.EnterState();
-        playerAnim.SetBool("isMoving", false);
-        playerAnim.SetBool("isCrouch", false);
-        playerAnim.SetBool("isRoll", true);
-        player.SetSpeedToRoll();
-        startTime = Time.time + waitStartTime;
+        player.ChangeAnimation("Roll");
         nextRollTime = coolDownTime + Time.time;
-        player.StartCoroutine(WaitForRollToEnd());
     }
 
     public override void ExitState()
     {
         base.ExitState();
-        player.SetSpeedToRun();
+        player.ResetMaxLinearVelocity();
     }
 
     public override void FrameUpdate()
@@ -43,21 +30,12 @@ public class RollState : PlayerState
     public override void PhisicsUpdate()
     {
         base.PhisicsUpdate();
-        if ( startTime < Time.time)
+        if (nextRollTime > Time.time)
         {
-            player.PlayerAddForce((player.transform.forward));
+            player.Move(player.transform.forward);
+        } else
+        {
+        player.StateMachine.ChangeState(player.IdleState);
         }
-    }
-
-    private IEnumerator WaitForRollToEnd()
-    {
-        yield return new WaitForSeconds(0.6f); // Megvárja a támadás végét
-        playerAnim.SetBool("isRoll", false);
-        playerStateMachine.ChangeState(player.IdleState);
-    }
-
-    public bool IsUsable()
-    {
-        return nextRollTime < Time.time;
     }
 }
