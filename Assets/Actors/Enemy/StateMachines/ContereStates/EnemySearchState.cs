@@ -7,11 +7,6 @@ public class EnemySearchState : EnemyState
     {
     }
 
-    public override void AnimationTriggerEvent(Enemy.AnimationTriggerType triggerType)
-    {
-        base.AnimationTriggerEvent(triggerType);
-    }
-
     public override void EnterState()
     {
         base.EnterState();

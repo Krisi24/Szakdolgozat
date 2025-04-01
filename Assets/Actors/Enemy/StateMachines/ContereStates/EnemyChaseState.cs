@@ -7,17 +7,14 @@ public class EnemyChaseState : EnemyState
     {
     }
 
-    public override void AnimationTriggerEvent(Enemy.AnimationTriggerType triggerType)
-    {
-        base.AnimationTriggerEvent(triggerType);
-    }
-
     public override void EnterState()
     {
         base.EnterState();
         enemy.anim.SetBool("isMoving", true);
 
         enemy.IsPlayerSeen = true;
+
+        enemy.overlord.NotifyOthers(enemy.playerLastPosition, enemy);
     }
     public override void ExitState()
     {

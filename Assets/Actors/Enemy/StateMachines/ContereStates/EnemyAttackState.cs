@@ -16,11 +16,6 @@ public class EnemyAttackState : EnemyState
         this.AttackBox = AttackBox;
     }
 
-    public override void AnimationTriggerEvent(Enemy.AnimationTriggerType triggerType)
-    {
-        base.AnimationTriggerEvent(triggerType);
-    }
-
     public override void EnterState()
     {
         base.EnterState();

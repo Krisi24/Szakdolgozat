@@ -16,7 +16,6 @@ public class Player : MonoBehaviour, IDamagable
     public float CurrentHealth { get; set; }
     private bool isCrouches = false;
 
-
     private Animator anim;
     private string currentAnimation = "";
 
@@ -42,56 +41,54 @@ public class Player : MonoBehaviour, IDamagable
 
     #endregion
 
-    public void ChangeAnimation(string animation)
+    #region MonoBehavior Methods
+    private void Start()
     {
-        if(animation != currentAnimation)
-        {
-            currentAnimation = animation;
-            anim.CrossFadeInFixedTime(animation, 0.2f);
-        }
+        rb = GetComponent<Rigidbody>();
+        StateMachine.Initalize(IdleState);
+        CurrentHealth = MaxHealth;
+        rb.maxLinearVelocity = runSpeed;
     }
-
-    public void InputLvlZero()
+    private void Awake()
     {
-        OnEnable();
-    }
+        anim = GetComponent<Animator>();
 
-    public void InputLvlOne()
+        StateMachine = new PlayerStateMachine();
+        IdleState = new IdleState(this);
+        RollState = new RollState(this);
+        AttackState = new AttackState(this, AttackBox);
+        DieState = new DieState(this);
+        MoveState = new MoveState(this);
+
+        var playerMap = inputActions.FindActionMap("Player", true);
+        moveAction = playerMap.FindAction("Move", true);
+        crouchAction = playerMap.FindAction("Crouch", true);
+        rollAction = playerMap.FindAction("Roll", true);
+        attackAction = playerMap.FindAction("Attack", true);
+    }
+    private void Update()
     {
-        moveAction.Disable();
-        crouchAction.Disable();
-        rollAction.Enable();
-        attackAction.Disable();
+        StateMachine.CurrentPlayerState.FrameUpdate();
     }
-
-    public void InputLvlTwo()
+    private void FixedUpdate()
     {
-        OnDisable();
-    }
+        StateMachine.CurrentPlayerState.PhisicsUpdate();
 
+    }
+    #endregion
+
+    #region Input Action Methods
     private void OnRoll()
     {
         InputLvlTwo();
         rb.maxLinearVelocity = rollSpeed;
         StateMachine.ChangeState(RollState);
     }
-
-    public void ResetMaxLinearVelocity()
-    {
-        if (isCrouches)
-        {
-            rb.maxLinearVelocity = crouchSpeed;
-        } else
-        {
-            rb.maxLinearVelocity = runSpeed;
-        }
-    }
-
     private void OnAttack()
     {
-        //StateMachine.ChangeState(AttackState);
+        InputLvlOne();
+        StateMachine.ChangeState(AttackState);
     }
-
     private void OnCrouch()
     {
         isCrouches = !isCrouches;
@@ -120,63 +117,42 @@ public class Player : MonoBehaviour, IDamagable
             }
         }
     }
-
     private void OnMove()
     {
         StateMachine.ChangeState(MoveState);
     }
 
-    public bool IsCrouches()
+    public void InputLvlZero()
     {
-        return isCrouches;
+        OnEnable();
+    }
+    public void InputLvlOne()
+    {
+        moveAction.Disable();
+        crouchAction.Disable();
+        rollAction.Enable();
+        attackAction.Disable();
+    }
+    public void InputLvlTwo()
+    {
+        OnDisable();
+    }
+    void OnEnable()
+    {
+        moveAction.Enable();
+        crouchAction.Enable();
+        rollAction.Enable();
+        attackAction.Enable();
+    }
+    void OnDisable()
+    {
+        moveAction.Disable();
+        crouchAction.Disable();
+        rollAction.Disable();
+        attackAction.Disable();
     }
 
-    public float GetRunSpeed()
-    {
-        return runSpeed;
-    }
-
-    public float GetCrouchSpeed()
-    {
-        return crouchSpeed;
-    }
-
-    private void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-        StateMachine.Initalize(IdleState);
-        CurrentHealth = MaxHealth;
-        rb.maxLinearVelocity = runSpeed;
-    }
-
-    private void Awake()
-    {
-        anim = GetComponent<Animator>();
-
-        StateMachine = new PlayerStateMachine();
-        IdleState = new IdleState(this);
-        RollState = new RollState(this);
-        //AttackState = new AttackState(this, AttackBox);
-        DieState = new DieState(this);
-        MoveState = new MoveState(this);
-
-        var playerMap = inputActions.FindActionMap("Player", true);
-        moveAction = playerMap.FindAction("Move", true);
-        crouchAction = playerMap.FindAction("Crouch", true);
-        rollAction = playerMap.FindAction("Roll", true);
-        attackAction = playerMap.FindAction("Attack", true);
-    }
-
-    private void Update()
-    {
-        StateMachine.CurrentPlayerState.FrameUpdate();
-    }
-
-    private void FixedUpdate()
-    {
-        StateMachine.CurrentPlayerState.PhisicsUpdate();
-
-    }
+    #endregion
 
     public void Damage(float damageAmount)
     {
@@ -198,15 +174,47 @@ public class Player : MonoBehaviour, IDamagable
 
         
     }
+    public void ChangeAnimation(string animation)
+    {
+        if(animation != currentAnimation)
+        {
+            currentAnimation = animation;
+            anim.CrossFadeInFixedTime(animation, 0.2f);
+        }
+    }
+
+    #region Getters Setters
+    public bool IsCrouches()
+    {
+        return isCrouches;
+    }
+    public float GetRunSpeed()
+    {
+        return runSpeed;
+    }
+    public Vector3 GetMoveInput()
+    {
+        return new Vector3(moveAction.ReadValue<Vector2>().x, 0, moveAction.ReadValue<Vector2>().y);
+    }
+    public float GetCrouchSpeed()
+    {
+        return crouchSpeed;
+    }
+    public void ResetMaxLinearVelocity()
+    {
+        if (isCrouches)
+        {
+            rb.maxLinearVelocity = crouchSpeed;
+        } else
+        {
+            rb.maxLinearVelocity = runSpeed;
+        }
+    }
+    #endregion
 
     public void Die()
     {
         Debug.Log("You're dead!");
-    }
-
-    public Vector3 GetMoveInput()
-    {
-        return new Vector3(moveAction.ReadValue<Vector2>().x, 0, moveAction.ReadValue<Vector2>().y);
     }
 
     public void Move(Vector3 direction)
@@ -220,20 +228,6 @@ public class Player : MonoBehaviour, IDamagable
     {
         Quaternion toRotation = Quaternion.LookRotation(velocity, Vector3.up);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
-    }
-    void OnEnable()
-    {
-        moveAction.Enable();
-        crouchAction.Enable();
-        rollAction.Enable();
-        attackAction.Enable();
-    }
-    void OnDisable()
-    {
-        moveAction.Disable();
-        crouchAction.Disable();
-        rollAction.Disable();
-        attackAction.Disable();
     }
 
 }

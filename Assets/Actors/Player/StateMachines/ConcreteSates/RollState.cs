@@ -35,7 +35,7 @@ public class RollState : PlayerState
             player.Move(player.transform.forward);
         } else
         {
-        player.StateMachine.ChangeState(player.IdleState);
+            player.StateMachine.ChangeState(player.IdleState);
         }
     }
 }

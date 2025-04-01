@@ -14,11 +14,6 @@ public class EnemyPatrolState : EnemyState
         this.patrolEndpoint = patrolEndpoint.position;
     }
 
-    public override void AnimationTriggerEvent(Enemy.AnimationTriggerType triggerType)
-    {
-        base.AnimationTriggerEvent(triggerType);
-    }
-
     public override void EnterState()
     {
         base.EnterState();

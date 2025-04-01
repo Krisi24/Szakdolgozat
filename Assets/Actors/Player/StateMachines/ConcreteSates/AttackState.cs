@@ -1,9 +1,8 @@
 using UnityEngine;
-using System.Collections;
 
 public class AttackState : PlayerState
 {
-    private float cooldownTime = 1.2f;
+    private float cooldownTime = 1f;
     private float nextfireTime = 0f;
     private float damage = 40f;
     public GameObject EnemyTarget { get; set; }
@@ -13,7 +12,7 @@ public class AttackState : PlayerState
     public Quaternion attackBoxRotation = new Quaternion();
 
 
-    public AttackState(Player player, PlayerStateMachine playerStateMachine) : base(player)
+    public AttackState(Player player, Transform AttackBox) : base(player)
     {
         this.AttackBox = AttackBox;
     }
@@ -21,15 +20,9 @@ public class AttackState : PlayerState
     public override void EnterState()
     {
         base.EnterState();
-        if (IsUsable())
-        {
-            player.StartCoroutine(WaitForAttackToEnd());
-        }
-    }
-
-    public bool IsUsable()
-    {
-        return nextfireTime < Time.time;
+        player.ChangeAnimation("Attack");
+        nextfireTime = Time.time + cooldownTime;
+        Attack();
     }
 
     public override void ExitState()
@@ -40,19 +33,15 @@ public class AttackState : PlayerState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
+        if(nextfireTime < Time.time)
+        {
+            player.StateMachine.ChangeState(player.IdleState);
+        }
     }
 
     public override void PhisicsUpdate()
     {
         base.PhisicsUpdate();
-    }
-
-
-    private IEnumerator WaitForAttackToEnd()
-    {
-        nextfireTime = Time.time + cooldownTime;
-        Attack();
-        yield return new WaitForSeconds(0.6f); // Megvárja a támadás végét
     }
 
     void Attack()

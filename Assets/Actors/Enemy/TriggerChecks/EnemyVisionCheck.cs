@@ -72,4 +72,5 @@ public class EnemyVisionCheck : MonoBehaviour
             enemy.isAggroed = false;
         }
     }
+
 }

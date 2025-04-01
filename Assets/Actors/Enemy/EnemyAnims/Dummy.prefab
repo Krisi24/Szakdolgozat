@@ -82,7 +82,7 @@ PrefabInstance:
     - target: {fileID: 415287891258781815, guid: fba4694c1d6040f4e85148da1301ade0, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: a3df597cd4e754946829620ab72bb0e9, type: 2}
+      objectReference: {fileID: 2100000, guid: ee1f8f9ac9a3cbf448d58bd106ff9bbc, type: 2}
     - target: {fileID: 919132149155446097, guid: fba4694c1d6040f4e85148da1301ade0, type: 3}
       propertyPath: m_Name
       value: Dummy
@@ -171,7 +171,14 @@ MonoBehaviour:
   <MaxHealth>k__BackingField: 100
   stopDistance: 2
   speed: 5
+  patrolEndpoint: {fileID: 0}
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 64
   AttackBox: {fileID: 4754694222800326202}
+  detectionRange: 10
+  avoidStrength: 5
+  obstacleCheckDistance: 2
   RandomMovementRange: 5
   RandomMovementSpeed: 3
 --- !u!136 &6241885388738439123

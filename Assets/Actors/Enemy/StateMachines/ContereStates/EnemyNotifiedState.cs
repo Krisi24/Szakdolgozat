@@ -1,21 +1,21 @@
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
-public class EnemyIdleState : EnemyState
+public class EnemyNotifiedState : EnemyState
 {
-
-    public EnemyIdleState(Enemy enemy, EnemyStateMachine enemyStateMachine) : base(enemy, enemyStateMachine)
+    public EnemyNotifiedState(Enemy enemy, EnemyStateMachine enemyStateMachine) : base(enemy, enemyStateMachine)
     {
     }
 
     public override void EnterState()
     {
         base.EnterState();
-        Debug.Log("Enter Idle State");
+        enemy.anim.SetBool("isMoving", true);
     }
-
     public override void ExitState()
     {
         base.ExitState();
+        enemy.anim.SetBool("isMoving", false);
     }
 
     public override void FrameUpdate()
@@ -24,15 +24,15 @@ public class EnemyIdleState : EnemyState
         if (enemy.isAggroed)
         {
             enemy.StateMachine.ChangeState(enemy.ChaseState);
-        } 
-        else if(enemy.IsPlayerSeen)
-        {
-            enemy.StateMachine.ChangeState(enemy.SearchState);
         }
     }
 
     public override void PhisicsUpdate()
     {
         base.PhisicsUpdate();
+        if (enemy.MoveEnemyToPosSmart(enemy.notifyPos))
+        {
+            enemy.StateMachine.ChangeState(enemy.IdleState);
+        }
     }
 }
