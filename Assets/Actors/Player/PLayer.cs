@@ -11,6 +11,7 @@ public class Player : MonoBehaviour, IDamagable
     [SerializeField] private float rollSpeed = 9f;
     [SerializeField] private float rotationSpeed = 1200f;
     [SerializeField] private HealthBar healthbar;
+    [SerializeField] private GameObject menu;
     public Transform AttackBox;
     public float MaxHealth { get; set; } = 500f;
     public float CurrentHealth { get; set; }
@@ -27,6 +28,7 @@ public class Player : MonoBehaviour, IDamagable
     private InputAction crouchAction;
     private InputAction rollAction;
     private InputAction attackAction;
+    private InputAction menuAction;
 
     #endregion
 
@@ -65,6 +67,7 @@ public class Player : MonoBehaviour, IDamagable
         crouchAction = playerMap.FindAction("Crouch", true);
         rollAction = playerMap.FindAction("Roll", true);
         attackAction = playerMap.FindAction("Attack", true);
+        menuAction = playerMap.FindAction("Menu", true);
     }
     private void Update()
     {
@@ -78,6 +81,12 @@ public class Player : MonoBehaviour, IDamagable
     #endregion
 
     #region Input Action Methods
+    private void OnMenu()
+    {
+        OnDisable();
+        Time.timeScale = 0;
+        menu.SetActive(true);
+    }
     private void OnRoll()
     {
         InputLvlTwo();
@@ -121,7 +130,6 @@ public class Player : MonoBehaviour, IDamagable
     {
         StateMachine.ChangeState(MoveState);
     }
-
     public void InputLvlZero()
     {
         OnEnable();
