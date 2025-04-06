@@ -4,7 +4,7 @@ using UnityEngine;
 public class FollowPlayer : MonoBehaviour
 {
     [SerializeField] private Transform cameraTarget;
-    [SerializeField] private Vector3 offset;
+    private Vector3 offset = new Vector3(0f, 10f, -10f);
 
     [SerializeField] private float smoothTime = 0.1f;
 
