@@ -936,7 +936,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraTarget: {fileID: 6451783020086139383}
-  offset: {x: 0, y: 12, z: -9}
   smoothTime: 0.02
 --- !u!1 &344487104
 GameObject:
@@ -1681,6 +1680,10 @@ PrefabInstance:
     - target: {fileID: 799138064450212650, guid: c78cc94abb05e1140a31dfd27acdae28, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4536683955528281636, guid: c78cc94abb05e1140a31dfd27acdae28, type: 3}
+      propertyPath: notifyDistance
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 4536683955528281636, guid: c78cc94abb05e1140a31dfd27acdae28, type: 3}
       propertyPath: 'team1.Array.data[0]'
