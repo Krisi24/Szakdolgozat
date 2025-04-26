@@ -19,7 +19,10 @@ public class Overlord : MonoBehaviour
     public void NotifyOthers(Vector3 seenPos, Enemy notifier)
     {
         foreach(Enemy enemy in team1){
-            if(enemy == notifier || enemy == null)
+            if(enemy == notifier || enemy == null 
+                || enemy.StateMachine.CurrentEnemyState == enemy.AttackState
+                || enemy.StateMachine.CurrentEnemyState == enemy.DieState
+                || enemy.StateMachine.CurrentEnemyState == enemy.ChaseState)
             {
                 continue;
             }

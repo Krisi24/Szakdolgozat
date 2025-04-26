@@ -17,7 +17,7 @@ public class EnemyPatrolState : EnemyState
     public override void EnterState()
     {
         base.EnterState();
-        Debug.Log("Enter Patrol State");
+        //Debug.Log("Enter Patrol State");
         enemy.anim.SetBool("isMoving", true);
     }
     public override void ExitState()

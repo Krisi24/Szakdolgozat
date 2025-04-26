@@ -10,7 +10,7 @@ public class EnemyIdleState : EnemyState
     public override void EnterState()
     {
         base.EnterState();
-        Debug.Log("Enter Idle State");
+        //Debug.Log("Enter Idle State");
     }
 
     public override void ExitState()

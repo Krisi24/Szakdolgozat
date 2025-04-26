@@ -6,7 +6,6 @@ public class EnemyAttackState : EnemyState
     public float cooldownTime = 1.2f;
     private float damage = 10f;
     public GameObject EnemyTarget { get; set; }
-
     public Transform AttackBox;
     public Vector3 attackRange = new Vector3(2f, 1.75f, 1.25f);
     public Quaternion attackBoxRotation = new Quaternion();
@@ -18,6 +17,7 @@ public class EnemyAttackState : EnemyState
 
     public override void EnterState()
     {
+        Debug.Log("Enter Attack State");
         base.EnterState();
         enemy.anim.SetBool("isAttack", true); // Elindítja a támadás animációt
         enemy.StartCoroutine(WaitForAttackToEnd()); // Várakoztatás, hogy befejezze
@@ -25,6 +25,7 @@ public class EnemyAttackState : EnemyState
 
     public override void ExitState()
     {
+        //Debug.Log("Exit Attack State");
         base.ExitState();
         enemy.anim.SetBool("isAttack", false);
     }
@@ -42,12 +43,13 @@ public class EnemyAttackState : EnemyState
     private IEnumerator WaitForAttackToEnd()
     {
         Attack();
-        yield return new WaitForSeconds(1f); // Megvárja a támadás végét
+        yield return new WaitForSeconds(cooldownTime); // Megvárja a támadás végét
         enemyStateMachine.ChangeState(enemy.ChaseState); // Visszavált üldözés módba
     }
 
     void Attack()
     {
+        Debug.Log("Attack happend");
         Collider[] hitEnemies = Physics.OverlapBox(AttackBox.position, attackRange, attackBoxRotation);
 
         foreach (Collider enemy in hitEnemies)

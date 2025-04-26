@@ -2,30 +2,36 @@ using UnityEditor;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class Enemy : MonoBehaviour, IDamagable, IEnemyMovable
+public class Enemy : MonoBehaviour
 {
 
     [field: SerializeField] private float MaxHealth { get; set; } = 100f;
+    float CurrentHealth { get; set; }
     [field: SerializeField] private float stopDistance;
     [field: SerializeField] private float speed;
     [field: SerializeField] private Transform? patrolEndpoint;
     [field: SerializeField] private LayerMask obstructionMask;
-    public GameObject PlayerTarget { get; set; }
     public Animator anim { get; set; }
-    public Transform AttackBox;
-    float CurrentHealth { get; set; }
-    float IDamagable.MaxHealth { get => MaxHealth; set => MaxHealth = value; }
-    float IDamagable.CurrentHealth { get => CurrentHealth; set => CurrentHealth = value; }
     public Rigidbody RB { get; set; }
-    public bool isFacingRight { get; set; }
 
+    #region dectection & movement & attack
+    public GameObject PlayerTarget { get; set; }
+    public Overlord overlord;
+    public Transform AttackBox;
+
+    public bool isFacingRight { get; set; }
     public Vector3 playerLastPosition { get; set; }
     public Vector3 notifyPos { get; set; }
     public bool IsPlayerSeen { get; set; }
+    public bool isAggroed { get; set; }
 
+    public float detectionRange = 10f;
+    public float avoidStrength = 5f;
+    public float obstacleCheckDistance = 2f;
+
+    #endregion
 
     #region stateMachine variables
-
     public EnemyStateMachine StateMachine { get; set; }
     public EnemyIdleState IdleState { get; set; }
     public EnemyChaseState ChaseState { get; set; }
@@ -33,23 +39,6 @@ public class Enemy : MonoBehaviour, IDamagable, IEnemyMovable
     public EnemyDieState DieState { get; set; }
     public EnemySearchState SearchState { get; set; }
     public EnemyPatrolState PatrolState { get; set; }
-    public EnemyNotifiedState NotifiedState { get; set; }
-    public bool isAggroed { get; set; }
-
-
-    public float detectionRange = 10f;
-    public float avoidStrength = 5f;
-    public float obstacleCheckDistance = 2f;
-
-    public Overlord overlord;
-
-    #endregion
-
-    #region IdleVariables
-
-    public float RandomMovementRange = 5f;
-    public float RandomMovementSpeed = 3f;
-
     #endregion
 
     private void Awake()
@@ -60,7 +49,6 @@ public class Enemy : MonoBehaviour, IDamagable, IEnemyMovable
         AttackState = new EnemyAttackState(this, StateMachine, AttackBox);
         DieState = new EnemyDieState(this, StateMachine);
         SearchState = new EnemySearchState(this, StateMachine);
-        NotifiedState = new EnemyNotifiedState(this, StateMachine);
         PlayerTarget = GameObject.FindGameObjectWithTag("Player");
         overlord = GameObject.FindFirstObjectByType<Overlord>();
     }
@@ -104,6 +92,12 @@ public class Enemy : MonoBehaviour, IDamagable, IEnemyMovable
     public void Die()
     {
         Destroy(gameObject);
+    }
+
+    public void NotifyDetection(Vector3 pos)
+    {
+        notifyPos = pos;
+        StateMachine.ChangeState(SearchState);
     }
 
     // Returns true if stops
@@ -170,54 +164,23 @@ public class Enemy : MonoBehaviour, IDamagable, IEnemyMovable
         return true;
     }
 
-    public void NotifyDetection(Vector3 pos)
-    {
-        notifyPos = pos;
-        StateMachine.ChangeState(NotifiedState);
-    }
-
     public bool MoveEnemyToPosSmart(Vector3 position)
     {
-        if(Vector3.Distance(transform.position, position) < stopDistance)
+        float distance = Vector3.Distance(transform.position, position);
+
+        // Ha a távolság nagyobb, mint a stopDistance, akkor mozgás
+        if (distance > stopDistance)
         {
-            return true;
+            // A célpont irányának kiszámítása
+            Vector3 direction = (position - transform.position).normalized;
+
+            // Mozgás a célpont irányába
+            transform.position += direction * speed * Time.deltaTime;
+
+            transform.LookAt(new Vector3(position.x, transform.position.y, position.z));
+
+            return false;
         }
-        Vector3 enemypos = new Vector3(0f, 1.5f, 0f) + transform.position;
-
-        Vector3 toPlayer = (position - transform.position).normalized;
-        Vector3 finalDirection = toPlayer;
-
-        // Obstacle avoidance ray
-        if (Physics.Raycast(enemypos, toPlayer, out RaycastHit hit, obstacleCheckDistance, obstructionMask))
-        {
-            // Ha falat lát, akkor próbál oldalra kitérni
-            Vector3 obstacleNormal = hit.normal;
-            Vector3 avoidDirection = Vector3.Cross(obstacleNormal, Vector3.up).normalized;
-
-            // Döntsük el, melyik irányba próbáljunk kitérni
-            Vector3 rightTry = Quaternion.AngleAxis(45, Vector3.up) * toPlayer;
-            Vector3 leftTry = Quaternion.AngleAxis(-45, Vector3.up) * toPlayer;
-
-            bool rightFree = !Physics.Raycast(enemypos, rightTry, obstacleCheckDistance, obstructionMask);
-            bool leftFree = !Physics.Raycast(enemypos, leftTry, obstacleCheckDistance, obstructionMask);
-
-            if (rightFree)
-                avoidDirection = rightTry;
-            else if (leftFree)
-                avoidDirection = leftTry;
-
-            finalDirection = Vector3.Lerp(toPlayer, avoidDirection, 0.7f).normalized;
-        }
-
-        // Mozgatás
-        transform.position += finalDirection * speed * Time.fixedDeltaTime;
-
-        // Forgatás a mozgás irányába
-        if (finalDirection.sqrMagnitude > 0.01f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(finalDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10f * Time.fixedDeltaTime);
-        }
-        return false;
+        return true;
     }
 }
