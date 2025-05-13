@@ -10,11 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3591644860445115680, guid: 5306944ad822d8545ae3f6d5acc5d6bb, type: 3}
       propertyPath: m_Name
-      value: Wall_A (3) Variant
-      objectReference: {fileID: 0}
-    - target: {fileID: 4220934241292132250, guid: 5306944ad822d8545ae3f6d5acc5d6bb, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 6
+      value: Wall_6x
       objectReference: {fileID: 0}
     - target: {fileID: 4220934241292132250, guid: 5306944ad822d8545ae3f6d5acc5d6bb, type: 3}
       propertyPath: m_LocalPosition.x

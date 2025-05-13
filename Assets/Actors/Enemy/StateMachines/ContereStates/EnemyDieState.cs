@@ -9,15 +9,14 @@ public class EnemyDieState : EnemyState
     public override void EnterState()
     {
         base.EnterState();
-        enemy.anim.SetBool("isMoving", false);
-        enemy.anim.SetBool("isAttack", false);
-        enemy.anim.SetBool("isDead", true);
+        enemy.ChangeAnimation("Fall");
         enemy.StartCoroutine(WaitForDie());
     }
 
     public override void ExitState()
     {
         base.ExitState();
+        //Debug.Log("Exit Die State");
     }
 
     public override void FrameUpdate()

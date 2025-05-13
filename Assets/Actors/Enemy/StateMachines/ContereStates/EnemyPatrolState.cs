@@ -18,12 +18,11 @@ public class EnemyPatrolState : EnemyState
     {
         base.EnterState();
         //Debug.Log("Enter Patrol State");
-        enemy.anim.SetBool("isMoving", true);
+        enemy.ChangeAnimation("Walking");
     }
     public override void ExitState()
     {
         base.ExitState();
-        enemy.anim.SetBool("isMoving", false);
     }
 
     public override void FrameUpdate()

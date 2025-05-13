@@ -34,10 +34,7 @@ public class Enemy : MonoBehaviour
     public Vector3 playerLastPosition { get; set; }
     public bool IsPlayerSeen { get; set; }
     public bool isAggroed { get; set; }
-
-    public float detectionRange = 10f;
-    public float avoidStrength = 5f;
-    public float obstacleCheckDistance = 2f;
+    private string currentAnimation = "";
 
     #endregion
 
@@ -79,7 +76,8 @@ public class Enemy : MonoBehaviour
         if (patrolEndpoint == null)
         {
             StateMachine.Initalize(IdleState);
-        } else
+        }
+        else
         {
             PatrolState = new EnemyPatrolState(this, StateMachine, patrolEndpoint);
             StateMachine.Initalize(PatrolState);
@@ -97,13 +95,17 @@ public class Enemy : MonoBehaviour
 
     public void Damage(float damageAmount)
     {
+        if (!isAggroed)
+        {
+            //StateMachine.ChangeState();
+        }
         //Debug.Log("Health: " + CurrentHealth + "_Damage: " + damageAmount);
         CurrentHealth -= damageAmount;
         if (CurrentHealth <= 0)
         {
             StateMachine.ChangeState(DieState);
         }
-        
+
     }
 
     public void Die()
@@ -113,6 +115,10 @@ public class Enemy : MonoBehaviour
 
     public void NotifyDetection(Vector3 pos)
     {
+        if (StateMachine.CurrentEnemyState == DieState)
+        {
+            return;
+        }
         playerLastPosition = pos;
         StateMachine.ChangeState(SearchState);
     }
@@ -167,14 +173,14 @@ public class Enemy : MonoBehaviour
         {
             // A célpont irányának kiszámítása
             Vector3 direction = (pos - transform.position).normalized;
-            Vector3 movement = direction * speed * Time.deltaTime;
+            Vector3 movement = direction * (speed / 3) * Time.deltaTime;
             // Mozgás a célpont irányába
             transform.position += movement;
 
             //transform.LookAt(new Vector3(pos.x, transform.position.y, pos.z));
 
             Quaternion toRotation = Quaternion.LookRotation(movement, Vector3.up);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, 1200 * Time.deltaTime);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, 600 * Time.deltaTime);
 
             return false;
         }
@@ -187,7 +193,6 @@ public class Enemy : MonoBehaviour
         Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 450 * Time.deltaTime);
     }
-
 
     public bool MoveEnemyToPosSmart(Vector3 position)
     {
@@ -227,11 +232,11 @@ public class Enemy : MonoBehaviour
         if (Vector3.Distance(transform.position, path.corners[currentCornerIndex]) < 0.1f
             && path.corners.Length > currentCornerIndex)
         {
-            Debug.Log("corner index: " + currentCornerIndex);
-            Debug.Log("corner lenth: " + path.corners.Length);
+            //Debug.Log("corner index: " + currentCornerIndex);
+            //Debug.Log("corner lenth: " + path.corners.Length);
             currentCornerIndex++;
         }
-        if(currentCornerIndex < path.corners.Length)
+        if (currentCornerIndex < path.corners.Length)
         {
             Debug.DrawRay(path.corners[currentCornerIndex], Vector3.up, Color.green);
             return path.corners[currentCornerIndex];
@@ -261,5 +266,15 @@ public class Enemy : MonoBehaviour
             listToFill.Add(child.gameObject);
             GetAllChildrenRecursive(child, listToFill); // Rekurzív hívás a gyerek gyerekeire
         }
+    }
+
+    public void ChangeAnimation(string animation)
+    {
+        if (animation != currentAnimation)
+        {
+            currentAnimation = animation;
+            anim.CrossFadeInFixedTime(animation, 0.2f);
+        }
+
     }
 }

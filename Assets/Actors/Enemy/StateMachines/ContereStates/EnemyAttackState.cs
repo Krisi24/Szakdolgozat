@@ -19,7 +19,7 @@ public class EnemyAttackState : EnemyState
     {
         //Debug.Log("Enter Attack State");
         base.EnterState();
-        enemy.anim.SetBool("isAttack", true); // Elindítja a támadás animációt
+        enemy.ChangeAnimation("Attack");
         enemy.StartCoroutine(WaitForAttackToEnd()); // Várakoztatás, hogy befejezze
     }
 
@@ -27,7 +27,6 @@ public class EnemyAttackState : EnemyState
     {
         //Debug.Log("Exit Attack State");
         base.ExitState();
-        enemy.anim.SetBool("isAttack", false);
     }
 
     public override void FrameUpdate()
@@ -45,7 +44,10 @@ public class EnemyAttackState : EnemyState
     {
         Attack();
         yield return new WaitForSeconds(cooldownTime); // Megvárja a támadás végét
-        enemyStateMachine.ChangeState(enemy.ChaseState); // Visszavált üldözés módba
+        if (enemy.StateMachine.CurrentEnemyState != enemy.DieState)
+        {
+            enemy.StateMachine.ChangeState(enemy.SearchState);
+        }
     }
 
     void Attack()

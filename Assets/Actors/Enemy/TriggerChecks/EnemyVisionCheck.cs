@@ -41,7 +41,7 @@ public class EnemyVisionCheck : MonoBehaviour
     private void FieldOfViewCheck()
     {
         Collider[] rangeCheck = Physics.OverlapSphere(transform.position, radius, playerLayer);
-
+        Collider[] rangeCheck2 = Physics.OverlapSphere(transform.position, 1, playerLayer);
 
         if (rangeCheck.Length != 0)
         {

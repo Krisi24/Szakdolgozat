@@ -10,6 +10,7 @@ public class EnemyIdleState : EnemyState
     public override void EnterState()
     {
         base.EnterState();
+        enemy.ChangeAnimation("Idle");
         //Debug.Log("Enter Idle State");
     }
 

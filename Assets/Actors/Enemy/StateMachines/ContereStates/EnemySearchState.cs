@@ -11,12 +11,11 @@ public class EnemySearchState : EnemyState
     {
         base.EnterState();
         enemy.SetRoute();
-        enemy.anim.SetBool("isMoving", true);
+        enemy.ChangeAnimation("Run");
     }
     public override void ExitState()
     {
         base.ExitState();
-        enemy.anim.SetBool("isMoving", false);
         enemy.IsPlayerSeen = false;
     }
 

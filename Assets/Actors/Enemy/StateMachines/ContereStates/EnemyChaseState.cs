@@ -11,14 +11,13 @@ public class EnemyChaseState : EnemyState
     {
         base.EnterState();
         enemy.XrayOn();
-        enemy.anim.SetBool("isMoving", true);
+        enemy.ChangeAnimation("Run");
         enemy.IsPlayerSeen = true;
         enemy.overlord.NotifyOthers(enemy.playerLastPosition, enemy);
     }
     public override void ExitState()
     {
         base.ExitState();
-        enemy.anim.SetBool("isMoving", false);
     }
 
     public override void FrameUpdate()
