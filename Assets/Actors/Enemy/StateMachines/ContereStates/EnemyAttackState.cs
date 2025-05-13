@@ -17,7 +17,7 @@ public class EnemyAttackState : EnemyState
 
     public override void EnterState()
     {
-        Debug.Log("Enter Attack State");
+        //Debug.Log("Enter Attack State");
         base.EnterState();
         enemy.anim.SetBool("isAttack", true); // Elindítja a támadás animációt
         enemy.StartCoroutine(WaitForAttackToEnd()); // Várakoztatás, hogy befejezze
@@ -33,6 +33,7 @@ public class EnemyAttackState : EnemyState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
+        enemy.RotateEnemyToPLayer();
     }
 
     public override void PhisicsUpdate()
@@ -49,7 +50,7 @@ public class EnemyAttackState : EnemyState
 
     void Attack()
     {
-        Debug.Log("Attack happend");
+        //Debug.Log("Attack happend");
         Collider[] hitEnemies = Physics.OverlapBox(AttackBox.position, attackRange, attackBoxRotation);
 
         foreach (Collider enemy in hitEnemies)

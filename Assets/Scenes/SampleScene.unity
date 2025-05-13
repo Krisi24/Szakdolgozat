@@ -6212,7 +6212,7 @@ MonoBehaviour:
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_UseGeometry: 0
+  m_UseGeometry: 1
   m_DefaultArea: 0
   m_GenerateLinks: 0
   m_IgnoreNavMeshAgent: 1
@@ -6649,10 +6649,6 @@ PrefabInstance:
     - target: {fileID: 4239704623262920246, guid: e7b7d53681f50234aa20385916698e5a, type: 3}
       propertyPath: m_Name
       value: Enemy Dummy (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 9125264455460293334, guid: e7b7d53681f50234aa20385916698e5a, type: 3}
-      propertyPath: m_Drag
-      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

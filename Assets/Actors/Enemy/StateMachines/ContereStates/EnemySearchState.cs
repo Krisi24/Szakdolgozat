@@ -10,6 +10,7 @@ public class EnemySearchState : EnemyState
     public override void EnterState()
     {
         base.EnterState();
+        enemy.SetRoute();
         enemy.anim.SetBool("isMoving", true);
     }
     public override void ExitState()
@@ -31,7 +32,7 @@ public class EnemySearchState : EnemyState
     public override void PhisicsUpdate()
     {
         base.PhisicsUpdate();
-        if (enemy.MoveEnemyToPosSmart(enemy.notifyPos))
+        if (enemy.MoveEnemyToPosSmart(enemy.GetNextMovePosition()))
         {
             enemy.StateMachine.ChangeState(enemy.IdleState);
         }

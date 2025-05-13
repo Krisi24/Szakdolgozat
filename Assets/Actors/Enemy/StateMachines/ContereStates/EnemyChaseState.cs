@@ -10,6 +10,7 @@ public class EnemyChaseState : EnemyState
     public override void EnterState()
     {
         base.EnterState();
+        enemy.XrayOn();
         enemy.anim.SetBool("isMoving", true);
         enemy.IsPlayerSeen = true;
         enemy.overlord.NotifyOthers(enemy.playerLastPosition, enemy);

@@ -1,7 +1,10 @@
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public class Enemy : MonoBehaviour
 {
@@ -12,6 +15,9 @@ public class Enemy : MonoBehaviour
     [field: SerializeField] private float speed;
     [field: SerializeField] private Transform? patrolEndpoint;
     [field: SerializeField] private LayerMask obstructionMask;
+    [field: SerializeField] private LayerMask XrayMask;
+
+    private bool isXrayOn = false;
 
     NavMeshAgent _navMeshAgent;
     private NavMeshPath path;
@@ -26,7 +32,6 @@ public class Enemy : MonoBehaviour
 
     public bool isFacingRight { get; set; }
     public Vector3 playerLastPosition { get; set; }
-    public Vector3 notifyPos { get; set; }
     public bool IsPlayerSeen { get; set; }
     public bool isAggroed { get; set; }
 
@@ -108,7 +113,7 @@ public class Enemy : MonoBehaviour
 
     public void NotifyDetection(Vector3 pos)
     {
-        notifyPos = pos;
+        playerLastPosition = pos;
         StateMachine.ChangeState(SearchState);
     }
 
@@ -176,32 +181,85 @@ public class Enemy : MonoBehaviour
         return true;
     }
 
-
-    public void SetRoute(Vector3 position)
+    public void RotateEnemyToPLayer()
     {
-        NavMesh.CalculatePath(transform.position, position, NavMesh.AllAreas, path);
+        Vector3 directionToTarget = PlayerTarget.transform.position - transform.position;
+        Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 450 * Time.deltaTime);
     }
+
+
     public bool MoveEnemyToPosSmart(Vector3 position)
     {
-        float distance = Vector3.Distance(transform.position, PlayerTarget.transform.position);
+        float distance = Vector3.Distance(transform.position, playerLastPosition);
 
         // Ha a távolság nagyobb, mint a stopDistance, akkor mozgás
-        if (distance > stopDistance)
+        if (distance > 0.1f)
         {
-            NavMesh.CalculatePath(transform.position, position, NavMesh.AllAreas, path);
-
-
-
-            Vector3 direction = (PlayerTarget.transform.position - transform.position).normalized;
+            Vector3 direction = (position - transform.position).normalized;
 
             // Mozgás a célpont irányába
             transform.position += direction * speed * Time.deltaTime;
 
-            transform.LookAt(new Vector3(PlayerTarget.transform.position.x, transform.position.y, PlayerTarget.transform.position.z));
+            transform.LookAt(new Vector3(position.x, transform.position.y, position.z));
             //_navMeshAgent.SetDestination(position);
             return false;
         }
         //_navMeshAgent.SetDestination(transform.position);
         return true;
+    }
+
+    public void SetRoute()
+    {
+        NavMesh.CalculatePath(transform.position, playerLastPosition, NavMesh.AllAreas, path);
+        currentCornerIndex = 1;
+        Debug.Log("corner index: " + currentCornerIndex);
+        Debug.Log("corner lenth: " + path.corners.Length);
+    }
+    public Vector3 GetNextMovePosition()
+    {
+        if (currentCornerIndex == path.corners.Length)
+        {
+            return playerLastPosition;
+        }
+
+        Debug.DrawRay(playerLastPosition, Vector3.up, Color.red);
+        if (Vector3.Distance(transform.position, path.corners[currentCornerIndex]) < 0.1f
+            && path.corners.Length > currentCornerIndex)
+        {
+            Debug.Log("corner index: " + currentCornerIndex);
+            Debug.Log("corner lenth: " + path.corners.Length);
+            currentCornerIndex++;
+        }
+        if(currentCornerIndex < path.corners.Length)
+        {
+            Debug.DrawRay(path.corners[currentCornerIndex], Vector3.up, Color.green);
+            return path.corners[currentCornerIndex];
+        }
+        return playerLastPosition;
+    }
+
+    public void XrayOn()
+    {
+        if (isXrayOn)
+        {
+            return;
+        }
+        isXrayOn = true;
+        List<GameObject> allChildGameObjectsRecursive = new List<GameObject>();
+        GetAllChildrenRecursive(transform, allChildGameObjectsRecursive);
+        foreach (GameObject go in allChildGameObjectsRecursive)
+        {
+            go.layer = 8;
+        }
+    }
+
+    void GetAllChildrenRecursive(Transform parent, List<GameObject> listToFill)
+    {
+        foreach (Transform child in parent)
+        {
+            listToFill.Add(child.gameObject);
+            GetAllChildrenRecursive(child, listToFill); // Rekurzív hívás a gyerek gyerekeire
+        }
     }
 }
