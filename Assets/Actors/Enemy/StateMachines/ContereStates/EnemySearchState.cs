@@ -31,7 +31,7 @@ public class EnemySearchState : EnemyState
     public override void PhisicsUpdate()
     {
         base.PhisicsUpdate();
-        if (enemy.MoveEnemyToLastSeenPos())
+        if (enemy.MoveEnemyToPosSmart(enemy.notifyPos))
         {
             enemy.StateMachine.ChangeState(enemy.IdleState);
         }

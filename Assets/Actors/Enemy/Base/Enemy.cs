@@ -1,5 +1,6 @@
-using UnityEditor;
+using System.IO;
 using UnityEngine;
+using UnityEngine.AI;
 using static UnityEngine.GraphicsBuffer;
 
 public class Enemy : MonoBehaviour
@@ -11,6 +12,10 @@ public class Enemy : MonoBehaviour
     [field: SerializeField] private float speed;
     [field: SerializeField] private Transform? patrolEndpoint;
     [field: SerializeField] private LayerMask obstructionMask;
+
+    NavMeshAgent _navMeshAgent;
+    private NavMeshPath path;
+    private int currentCornerIndex = 1;
     public Animator anim { get; set; }
     public Rigidbody RB { get; set; }
 
@@ -58,6 +63,13 @@ public class Enemy : MonoBehaviour
         CurrentHealth = MaxHealth;
         RB = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
+        _navMeshAgent = GetComponent<NavMeshAgent>();
+        path = new NavMeshPath();
+
+        if (_navMeshAgent == null)
+        {
+            Debug.Log("NavMeshAgent is missing!");
+        }
 
         if (patrolEndpoint == null)
         {
@@ -164,23 +176,32 @@ public class Enemy : MonoBehaviour
         return true;
     }
 
+
+    public void SetRoute(Vector3 position)
+    {
+        NavMesh.CalculatePath(transform.position, position, NavMesh.AllAreas, path);
+    }
     public bool MoveEnemyToPosSmart(Vector3 position)
     {
-        float distance = Vector3.Distance(transform.position, position);
+        float distance = Vector3.Distance(transform.position, PlayerTarget.transform.position);
 
         // Ha a távolság nagyobb, mint a stopDistance, akkor mozgás
         if (distance > stopDistance)
         {
-            // A célpont irányának kiszámítása
-            Vector3 direction = (position - transform.position).normalized;
+            NavMesh.CalculatePath(transform.position, position, NavMesh.AllAreas, path);
+
+
+
+            Vector3 direction = (PlayerTarget.transform.position - transform.position).normalized;
 
             // Mozgás a célpont irányába
             transform.position += direction * speed * Time.deltaTime;
 
-            transform.LookAt(new Vector3(position.x, transform.position.y, position.z));
-
+            transform.LookAt(new Vector3(PlayerTarget.transform.position.x, transform.position.y, PlayerTarget.transform.position.z));
+            //_navMeshAgent.SetDestination(position);
             return false;
         }
+        //_navMeshAgent.SetDestination(transform.position);
         return true;
     }
 }
