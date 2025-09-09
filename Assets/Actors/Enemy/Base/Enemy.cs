@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -13,6 +14,7 @@ public class Enemy : MonoBehaviour
     float CurrentHealth { get; set; }
     [field: SerializeField] private float stopDistance;
     [field: SerializeField] private float speed;
+    [field: SerializeField] private float notificationDistance = 100f;
     [field: SerializeField] private Transform? patrolEndpoint;
     [field: SerializeField] private LayerMask obstructionMask;
     [field: SerializeField] private LayerMask XrayMask;
@@ -58,6 +60,9 @@ public class Enemy : MonoBehaviour
         SearchState = new EnemySearchState(this, StateMachine);
         PlayerTarget = GameObject.FindGameObjectWithTag("Player");
         overlord = GameObject.FindFirstObjectByType<Overlord>();
+
+
+        EnemyChaseState.OnNotifyAboutPlayer += NotifyDetection;
     }
 
     private void Start()
@@ -113,13 +118,23 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void NotifyDetection(Vector3 pos)
+    private void OnDestroy()
     {
-        if (StateMachine.CurrentEnemyState == DieState)
+        EnemyChaseState.OnNotifyAboutPlayer += NotifyDetection;
+    }
+
+    private void NotifyDetection(Vector3 playerPos, Vector3 enemyPos)
+    {
+        if ((Vector3.Distance(transform.position, enemyPos) > notificationDistance) ||
+            StateMachine.CurrentEnemyState == DieState ||
+            StateMachine.CurrentEnemyState == AttackState ||
+            StateMachine.CurrentEnemyState == ChaseState 
+            )
         {
             return;
         }
-        playerLastPosition = pos;
+        // Debug.Log("Notify distance: " + (Vector3.Distance(transform.position, enemyPos)));
+        playerLastPosition = playerPos;
         StateMachine.ChangeState(SearchState);
     }
 

@@ -29,7 +29,7 @@ public class Overlord : MonoBehaviour
             float distance = Vector3.Distance(enemy.transform.position, seenPos);
             if(distance < notifyDistance)
             {
-                enemy.NotifyDetection(seenPos);
+                //enemy.NotifyDetection(seenPos);
             }
         }
     }
