@@ -39,6 +39,7 @@ public class Player : MonoBehaviour, IDamagable
     private InputAction attackAction;
     private InputAction menuAction;
     private InputAction interactAction;
+    private InputAction specialMoveAction;
 
     #endregion
 
@@ -50,6 +51,7 @@ public class Player : MonoBehaviour, IDamagable
     public RollState RollState { get; set; }
     public AttackState AttackState { get; set; }
     public DieState DieState { get; set; }
+    public ThrowState ThrowState{ get; set; }
 
     #endregion
 
@@ -71,6 +73,7 @@ public class Player : MonoBehaviour, IDamagable
         AttackState = new AttackState(this, AttackBox);
         DieState = new DieState(this);
         MoveState = new MoveState(this);
+        ThrowState = new ThrowState(this, AttackBox);
 
         var playerMap = inputActions.FindActionMap("Player", true);
         moveAction = playerMap.FindAction("Move", true);
@@ -79,6 +82,7 @@ public class Player : MonoBehaviour, IDamagable
         attackAction = playerMap.FindAction("Attack", true);
         menuAction = playerMap.FindAction("Menu", true);
         interactAction = playerMap.FindAction("Interact", true);
+        specialMoveAction = playerMap.FindAction("SpecialMove", true);
     }
     private void Update()
     {
@@ -164,6 +168,11 @@ public class Player : MonoBehaviour, IDamagable
         }
     }
 
+    private void OnSpecialMove()
+    {
+        InputLvlOne();
+        StateMachine.ChangeState(ThrowState);
+    }
     public void InputLvlZero()
     {
         OnEnable();
