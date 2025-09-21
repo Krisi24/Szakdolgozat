@@ -120,7 +120,7 @@ public class Enemy : MonoBehaviour
 
     private void OnDestroy()
     {
-        EnemyChaseState.OnNotifyAboutPlayer += NotifyDetection;
+        EnemyChaseState.OnNotifyAboutPlayer -= NotifyDetection;
     }
 
     private void NotifyDetection(Vector3 playerPos, Vector3 enemyPos)
@@ -233,8 +233,8 @@ public class Enemy : MonoBehaviour
     {
         NavMesh.CalculatePath(transform.position, playerLastPosition, NavMesh.AllAreas, path);
         currentCornerIndex = 1;
-        Debug.Log("corner index: " + currentCornerIndex);
-        Debug.Log("corner lenth: " + path.corners.Length);
+        //Debug.Log("corner index: " + currentCornerIndex);
+        //Debug.Log("corner lenth: " + path.corners.Length);
     }
     public Vector3 GetNextMovePosition()
     {

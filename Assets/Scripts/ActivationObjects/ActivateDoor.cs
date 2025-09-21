@@ -2,19 +2,16 @@ using UnityEngine;
 
 public class ActivateDoor : MonoBehaviour, Activate
 {
-    [Tooltip("Milyen messzire csússzon az ajtó az eredeti pozíciójától.")]
     public float slideDistance = 2f;
 
-    [Tooltip("Milyen sebességgel csússzon az ajtó.")]
     public float slideSpeed = 3f;
 
-    [Tooltip("Melyik tengely mentén csússzon az ajtó? X = oldalra, Y = fel/le, Z = elõre/hátra.")]
-    public Vector3 slideDirection = Vector3.right; // Alapértelmezésben jobbra csúszik
+    public Vector3 slideDirection = Vector3.right;
 
-    private Vector3 initialPosition; // Az ajtó eredeti pozíciója
-    private Vector3 targetPosition;  // A célpozíció, ahova csúsznia kell
-    private bool isActivated = false; // Jelzi, hogy az ajtó aktiválva van-e
-    private bool isMoving = false;    // Jelzi, hogy az ajtó éppen mozog-e
+    private Vector3 initialPosition;
+    private Vector3 targetPosition;
+    private bool isActivated = false;
+    private bool isMoving = false;
 
     void Start()
     {
@@ -24,7 +21,6 @@ public class ActivateDoor : MonoBehaviour, Activate
 
     void Update()
     {
-        // Ha az ajtó éppen mozog...
         if (isMoving)
         {
             // Mozgatjuk az ajtót az aktuális pozíciójából a célpozíció felé.

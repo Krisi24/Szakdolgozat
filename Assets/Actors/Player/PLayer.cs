@@ -1,11 +1,13 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Windows;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class Player : MonoBehaviour, IDamagable
 {
 
-    private Rigidbody rb; 
+    private Rigidbody rb;
     [SerializeField] private float runSpeed = 6f;
     [SerializeField] private float crouchSpeed = 3f;
     [SerializeField] private float rollSpeed = 9f;
@@ -20,6 +22,13 @@ public class Player : MonoBehaviour, IDamagable
     private Animator anim;
     private string currentAnimation = "";
 
+    private Activate interactive;
+
+    #region 
+
+    public static event Action PlayerHasDied;
+
+    #endregion
 
     #region Input Actions
 
@@ -29,6 +38,7 @@ public class Player : MonoBehaviour, IDamagable
     private InputAction rollAction;
     private InputAction attackAction;
     private InputAction menuAction;
+    private InputAction interactAction;
 
     #endregion
 
@@ -68,6 +78,7 @@ public class Player : MonoBehaviour, IDamagable
         rollAction = playerMap.FindAction("Roll", true);
         attackAction = playerMap.FindAction("Attack", true);
         menuAction = playerMap.FindAction("Menu", true);
+        interactAction = playerMap.FindAction("Interact", true);
     }
     private void Update()
     {
@@ -81,6 +92,7 @@ public class Player : MonoBehaviour, IDamagable
     #endregion
 
     #region Input Action Methods
+
     private void OnMenu()
     {
         OnDisable();
@@ -130,6 +142,28 @@ public class Player : MonoBehaviour, IDamagable
     {
         StateMachine.ChangeState(MoveState);
     }
+    private void OnInteract()
+    {
+        if (interactive != null)
+        {
+            interactive.Activation();
+        }
+    }
+
+    public void SetInteractive(Activate newInteractive)
+    {
+        interactive = newInteractive;
+    }
+
+    public void ForgetInteractive(Activate newInteractive)
+    {
+        if (interactive != newInteractive) {
+        } else
+        {
+            interactive = null;
+        }
+    }
+
     public void InputLvlZero()
     {
         OnEnable();
@@ -140,6 +174,7 @@ public class Player : MonoBehaviour, IDamagable
         crouchAction.Disable();
         rollAction.Enable();
         attackAction.Disable();
+        interactAction.Disable();
     }
     public void InputLvlTwo()
     {
@@ -151,6 +186,7 @@ public class Player : MonoBehaviour, IDamagable
         crouchAction.Enable();
         rollAction.Enable();
         attackAction.Enable();
+        interactAction.Enable();
     }
     void OnDisable()
     {
@@ -158,6 +194,7 @@ public class Player : MonoBehaviour, IDamagable
         crouchAction.Disable();
         rollAction.Disable();
         attackAction.Disable();
+        interactAction.Disable();
     }
 
     #endregion
@@ -182,6 +219,7 @@ public class Player : MonoBehaviour, IDamagable
 
         
     }
+
     public void ChangeAnimation(string animation)
     {
         if(animation != currentAnimation)
@@ -223,6 +261,7 @@ public class Player : MonoBehaviour, IDamagable
     public void Die()
     {
         Debug.Log("You're dead!");
+        PlayerHasDied?.Invoke();
     }
 
     public void Move(Vector3 direction)
