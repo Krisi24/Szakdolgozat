@@ -6,7 +6,7 @@ public class MenuOptions : MonoBehaviour
 {
     public void StartNewPlay()
     {
-        SceneManager.LoadSceneAsync("SampleScene");
+        SceneManager.LoadSceneAsync("Level 1");
     }
 
     public void Restart()

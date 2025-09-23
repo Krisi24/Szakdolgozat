@@ -45,15 +45,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ad38653d5d1fda4db17c740bc527523, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 9.13
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ad38653d5d1fda4db17c740bc527523, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ad38653d5d1fda4db17c740bc527523, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 5.47
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ad38653d5d1fda4db17c740bc527523, type: 3}
       propertyPath: m_LocalRotation.w
@@ -480,7 +480,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   runSpeed: 6
   crouchSpeed: 3
-  rollSpeed: 9
+  rollSpeed: 7
   rotationSpeed: 1200
   healthbar: {fileID: 6637178946895624790}
   menu: {fileID: 0}

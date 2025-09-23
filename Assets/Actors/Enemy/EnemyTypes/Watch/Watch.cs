@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class Watch : MonoBehaviour
 {
@@ -8,8 +10,9 @@ public class Watch : MonoBehaviour
 
     [Header("Detektáló gömb beállításai")]
     public float detectionSphereRadius = 1f; // A detektáló gömb sugara
-    public float detectionSphereDistance = 2f; // A detektáló gömb távolsága a spotlámpától az elõre irányban
+    public float detectionSphereDistance = 8f; // A detektáló gömb távolsága a spotlámpától az elõre irányban
     public LayerMask hitLayers; // Választható layerek az OverlapSphere számára
+    public static event Action<Vector3, Vector3> OnNotifyAboutPlayer;
 
     private Light spotLight;
 
@@ -61,7 +64,8 @@ public class Watch : MonoBehaviour
             gizmoSphereDetected = true;
             foreach (Collider col in detectedColliders)
             {
-                //Debug.Log($"A detektáló gömb érintkezik: {col.name}");
+                Debug.Log($"A detektáló gömb érintkezik: {col.name}");
+                OnNotifyAboutPlayer?.Invoke(gizmoSphereCenter, gizmoSphereCenter);
             }
         }
         else

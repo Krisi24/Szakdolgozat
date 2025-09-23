@@ -63,6 +63,7 @@ public class Enemy : MonoBehaviour
 
 
         EnemyChaseState.OnNotifyAboutPlayer += NotifyDetection;
+        Watch.OnNotifyAboutPlayer += NotifyDetection;
     }
 
     private void Start()
@@ -121,6 +122,7 @@ public class Enemy : MonoBehaviour
     private void OnDestroy()
     {
         EnemyChaseState.OnNotifyAboutPlayer -= NotifyDetection;
+        Watch.OnNotifyAboutPlayer -= NotifyDetection;
     }
 
     private void NotifyDetection(Vector3 playerPos, Vector3 enemyPos)

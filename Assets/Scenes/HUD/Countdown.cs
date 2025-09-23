@@ -6,6 +6,8 @@ public class Countdown : MonoBehaviour
     [SerializeField] TextMeshProUGUI timerText;
     [SerializeField] TextMeshProUGUI interactionText;
     [SerializeField] TextMeshProUGUI loseText;
+    [SerializeField] GameObject restartButton;
+    [SerializeField] GameObject mainMenuButton;
     [SerializeField] float remainingTime = 60f;
 
     private void Awake()
@@ -48,6 +50,9 @@ public class Countdown : MonoBehaviour
                 timerText.color = Color.red;
                 timerText.text = string.Format("{0:00}:{1:00}", 0, 0);
                 loseText.gameObject.SetActive(true);
+                restartButton.gameObject.SetActive(true);
+                mainMenuButton.gameObject.SetActive(true);
+                Time.timeScale = 0;
                 return;
             }
             else{return;}
