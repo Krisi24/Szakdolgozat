@@ -1,20 +1,33 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class Countdown : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI timerText;
-    [SerializeField] TextMeshProUGUI interactionText;
-    [SerializeField] TextMeshProUGUI loseText;
-    [SerializeField] GameObject restartButton;
-    [SerializeField] GameObject mainMenuButton;
+    [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private TextMeshProUGUI interactionText;
+    [SerializeField] private TextMeshProUGUI loseText;
+    [SerializeField] private GameObject restartButton;
+    [SerializeField] private GameObject mainMenuButton;
     [SerializeField] float remainingTime = 60f;
+
+    [SerializeField] private TMP_Text collectableCounterText;
+    private int collectableCounter = 0;
+    private int collectableCollectedCounter = 0;
+    [SerializeField] private string collectableName;
 
     private void Awake()
     {
+        if (collectableCounterText == null)
+        {
+            Debug.LogWarning("CollectableCounter UI element is not set in the HUD inspector!");
+        }
+
         Player.PlayerHasDied += ShowTextLoseMessage;
         OpenDoor.ShowToolTip += ShowInteractionText;
         OpenDoor.HideToolTip += HideInteractionText;
+        Collectable.OnAwake += IncrementCollectableCounter;
+        Collectable.OnCollect += IncrementCollectableCounterCollected;
     }
 
     private void ShowTextLoseMessage()
@@ -32,9 +45,33 @@ public class Countdown : MonoBehaviour
         interactionText.gameObject.SetActive(false);
     }
 
+    private void IncrementCollectableCounter()
+    {
+        collectableCounter++;
+        if(collectableCounterText == null)
+        {
+            Debug.LogWarning("CollectableCounter UI element is not set in the HUD inspector!");
+            return;
+        }
+        collectableCounterText.text = collectableName + " " + collectableCounter.ToString() + " / 0";
+    }
+
+    private void IncrementCollectableCounterCollected()
+    {
+        collectableCollectedCounter++;
+        if (collectableCounterText == null)
+        {
+            Debug.LogWarning("CollectableCounter UI element is not set in the HUD inspector!");
+            return;
+        }
+        collectableCounterText.text = collectableName + " " + collectableCounter.ToString() + " / " + collectableCollectedCounter.ToString();
+    }
+
     private void Update()
     {
         UpdateTimer();
+
+
     }
 
     private void UpdateTimer()
@@ -68,5 +105,7 @@ public class Countdown : MonoBehaviour
         Player.PlayerHasDied -= ShowTextLoseMessage;
         OpenDoor.ShowToolTip -= ShowInteractionText;
         OpenDoor.HideToolTip -= HideInteractionText;
+        Collectable.OnAwake -= IncrementCollectableCounter;
+        Collectable.OnCollect -= IncrementCollectableCounterCollected;
     }
 }
