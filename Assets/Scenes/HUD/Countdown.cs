@@ -12,8 +12,11 @@ public class Countdown : MonoBehaviour
     [SerializeField] float remainingTime = 60f;
 
     [SerializeField] private TMP_Text collectableCounterText;
+    [SerializeField] private TMP_Text collectableCounterText2;
     private int collectableCounter = 0;
+    private int collectableCounter2 = 0;
     private int collectableCollectedCounter = 0;
+    private int collectableCollectedCounter2 = 0;
     [SerializeField] private string collectableName;
 
     private void Awake()
@@ -21,6 +24,10 @@ public class Countdown : MonoBehaviour
         if (collectableCounterText == null)
         {
             Debug.LogWarning("CollectableCounter UI element is not set in the HUD inspector!");
+        }
+        if (collectableCounterText2 == null)
+        {
+            Debug.LogWarning("CollectableCounter 2 UI element is not set in the HUD inspector!");
         }
 
         Player.PlayerHasDied += ShowTextLoseMessage;
@@ -33,6 +40,10 @@ public class Countdown : MonoBehaviour
     private void ShowTextLoseMessage()
     {
         loseText.gameObject.SetActive(true);
+        restartButton.gameObject.SetActive(true);
+        mainMenuButton.gameObject.SetActive(true);
+        timerText.color = Color.red;
+        Time.timeScale = 0;
     }
 
     private void ShowInteractionText()
@@ -84,12 +95,8 @@ public class Countdown : MonoBehaviour
             if (remainingTime != -1000f)
             {
                 remainingTime = -1000f;
-                timerText.color = Color.red;
                 timerText.text = string.Format("{0:00}:{1:00}", 0, 0);
-                loseText.gameObject.SetActive(true);
-                restartButton.gameObject.SetActive(true);
-                mainMenuButton.gameObject.SetActive(true);
-                Time.timeScale = 0;
+                ShowTextLoseMessage();
                 return;
             }
             else{return;}

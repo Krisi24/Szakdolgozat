@@ -2694,6 +2694,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 341c058ebeae76745a4018cd6415dfee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneNumber: 2
 --- !u!1001 &382811822
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15324,26 +15325,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2372839013160302779, guid: 0ab61f5e642cae147beb70c5e6397530, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 3359725073171960413, guid: 0ab61f5e642cae147beb70c5e6397530, type: 3}
       propertyPath: m_Name
       value: Hud
       objectReference: {fileID: 0}
-    - target: {fileID: 3359725073171960413, guid: 0ab61f5e642cae147beb70c5e6397530, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4219226527032154540, guid: 0ab61f5e642cae147beb70c5e6397530, type: 3}
-      propertyPath: collectableName
-      value: Bones
-      objectReference: {fileID: 0}
-    - target: {fileID: 4219226527032154540, guid: 0ab61f5e642cae147beb70c5e6397530, type: 3}
-      propertyPath: collectableObject
-      value: 
-      objectReference: {fileID: 4740405957763486878, guid: 61f35411aa5c5b248b1bb9dd9f1e11ba, type: 3}
     - target: {fileID: 4721498315092734636, guid: 0ab61f5e642cae147beb70c5e6397530, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -15423,22 +15408,6 @@ PrefabInstance:
     - target: {fileID: 4721498315092734636, guid: 0ab61f5e642cae147beb70c5e6397530, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7564598561485220244, guid: 0ab61f5e642cae147beb70c5e6397530, type: 3}
-      propertyPath: m_text
-      value: 0 / 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7564598561485220244, guid: 0ab61f5e642cae147beb70c5e6397530, type: 3}
-      propertyPath: m_fontSize
-      value: 36
-      objectReference: {fileID: 0}
-    - target: {fileID: 7564598561485220244, guid: 0ab61f5e642cae147beb70c5e6397530, type: 3}
-      propertyPath: m_fontStyle
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7564598561485220244, guid: 0ab61f5e642cae147beb70c5e6397530, type: 3}
-      propertyPath: m_fontSizeBase
-      value: 36
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

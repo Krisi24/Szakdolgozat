@@ -46,10 +46,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   orbitSpeed: 0.5
-  xAxisRadius: 5
-  yAxisRadius: 3
-  detectionSphereRadius: 1
-  detectionSphereDistance: 8
+  xAxisRadius: 7
+  yAxisRadius: 7
+  detectionSphereRadius: 2
+  detectionSphereDistance: 14.5
   hitLayers:
     serializedVersion: 2
     m_Bits: 8
@@ -79,13 +79,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7000430503849041780}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7933534, y: 0, z: 0, w: 0.6087614}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7555386295366829896}
-  m_LocalEulerAnglesHint: {x: 105, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!108 &3674316164113441409
 Light:
   m_ObjectHideFlags: 0

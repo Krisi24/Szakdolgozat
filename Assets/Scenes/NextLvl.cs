@@ -2,21 +2,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class NextLvl : MonoBehaviour
-{   
-
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
+{
+    [SerializeField] private int sceneNumber = 1;
 
     private void OnTriggerEnter(Collider collision)
     {
-        SceneManager.LoadSceneAsync("Level 2");
+        SceneManager.LoadSceneAsync("Level " + sceneNumber.ToString());
     }
 }
