@@ -125,5 +125,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   onCollectEffect: {fileID: 8771972552311404799, guid: 4faf1a432c1031249ba48c23cdb53ceb, type: 3}
   rotationSpeedY: 90
-  rotationSpeedX: 0
+  rotationSpeedX: 90
   countable: 1

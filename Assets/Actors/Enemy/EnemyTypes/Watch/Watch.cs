@@ -14,6 +14,11 @@ public class Watch : MonoBehaviour
     public LayerMask hitLayers; // Választható layerek az OverlapSphere számára
     public static event Action<Vector3, Vector3> OnNotifyAboutPlayer;
 
+    [Header("Enemy Spawner")]
+    public GameObject enemyPrefab;
+    public GameObject spawnPointObj;
+    public int spawnCount = 0;
+
     private Light spotLight;
 
     // Változók a Sphere Gizmo-hoz
@@ -64,6 +69,13 @@ public class Watch : MonoBehaviour
             gizmoSphereDetected = true;
             foreach (Collider col in detectedColliders)
             {
+                for (int i = 0; i < spawnCount; i++)
+                {
+                    Vector3 tempPos = spawnPointObj.transform.position;
+                    tempPos.z += i;
+                    Instantiate(enemyPrefab, tempPos, spawnPointObj.transform.rotation);
+                }
+                spawnCount = 0;
                 Debug.Log($"A detektáló gömb érintkezik: {col.name}");
                 OnNotifyAboutPlayer?.Invoke(gizmoSphereCenter, gizmoSphereCenter);
             }
