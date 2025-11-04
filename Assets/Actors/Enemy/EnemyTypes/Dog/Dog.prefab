@@ -922,6 +922,7 @@ MonoBehaviour:
   <MaxHealth>k__BackingField: 100
   stopDistance: 2
   speed: 7.5
+  notificationDistance: 30
   patrolEndpoint: {fileID: 0}
   obstructionMask:
     serializedVersion: 2

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8630593314711937180}
   m_Layer: 6
-  m_Name: creat_type1
+  m_Name: creates_type1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
