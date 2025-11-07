@@ -35,14 +35,7 @@ public class MoveState : PlayerState
         base.PhisicsUpdate();
         if (player.GetMoveInput() != Vector3.zero)
         {
-            if (player.IsCrouches())
-            {
-                player.Move(player.GetMoveInput());
-            }
-            else
-            {
-                player.Move(player.GetMoveInput());
-            }
+            player.Move(player.GetMoveInput());
         } else
         {
             player.StateMachine.ChangeState(player.IdleState);

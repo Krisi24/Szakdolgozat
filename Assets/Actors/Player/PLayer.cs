@@ -19,6 +19,10 @@ public class Player : MonoBehaviour, IDamagable
     public float CurrentHealth { get; set; }
     private bool isCrouches = false;
 
+    private CapsuleCollider playerCollider;
+    private Vector3 crouchPosition = new Vector3(0f, 0.65f, 0f);
+    private Vector3 standingPosition = new Vector3(0f, 0.85f, 0f);
+
     private Animator anim;
     private string currentAnimation = "";
 
@@ -66,6 +70,7 @@ public class Player : MonoBehaviour, IDamagable
     private void Awake()
     {
         anim = GetComponent<Animator>();
+        playerCollider = GetComponent<CapsuleCollider>();
 
         StateMachine = new PlayerStateMachine();
         IdleState = new IdleState(this);
@@ -120,6 +125,8 @@ public class Player : MonoBehaviour, IDamagable
         if (isCrouches)
         {
             rb.maxLinearVelocity = crouchSpeed;
+            playerCollider.center = crouchPosition;
+            playerCollider.height = 1.4f;
             if (StateMachine.CurrentPlayerState == IdleState)
             {
                 ChangeAnimation("Crouch Idle");
@@ -132,6 +139,8 @@ public class Player : MonoBehaviour, IDamagable
         else
         {
             rb.maxLinearVelocity = runSpeed;
+            playerCollider.center = standingPosition;
+            playerCollider.height = 1.9f;
             if (StateMachine.CurrentPlayerState == IdleState)
             {
                 ChangeAnimation("Idle");
