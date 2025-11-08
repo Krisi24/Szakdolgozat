@@ -16,21 +16,23 @@ public class EnemySearchState : EnemyState
     public override void ExitState()
     {
         base.ExitState();
-        enemy.IsPlayerSeen = false;
     }
 
     public override void FrameUpdate()
     {
         base.FrameUpdate();
-        if (enemy.isAggroed)
-        {
-            enemy.StateMachine.ChangeState(enemy.ChaseState);
-        }
     }
 
     public override void PhisicsUpdate()
     {
         base.PhisicsUpdate();
+
+        //Debug.Log("agro: " + enemy.isAggroed + "avaiable: " + enemy.PlayerIsDirectlyAvailable());
+        if (enemy.isAggroed && enemy.PlayerIsDirectlyAvailable())
+        {
+            enemy.StateMachine.ChangeState(enemy.ChaseState);
+            return;
+        }
         if (enemy.MoveEnemyToPosSmart(enemy.GetNextMovePosition()))
         {
             enemy.StateMachine.ChangeState(enemy.IdleState);

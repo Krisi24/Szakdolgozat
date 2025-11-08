@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class EnemyIdleState : EnemyState
 {
+    private float maxIdleTime = 3f;
+    private float idleStartTime;
 
     public EnemyIdleState(Enemy enemy, EnemyStateMachine enemyStateMachine) : base(enemy, enemyStateMachine)
     {
@@ -11,7 +13,7 @@ public class EnemyIdleState : EnemyState
     {
         base.EnterState();
         enemy.ChangeAnimation("Idle");
-        //Debug.Log("Enter Idle State");
+        idleStartTime = Time.realtimeSinceStartup;
     }
 
     public override void ExitState()
@@ -24,11 +26,18 @@ public class EnemyIdleState : EnemyState
         base.FrameUpdate();
         if (enemy.isAggroed)
         {
-            enemy.StateMachine.ChangeState(enemy.ChaseState);
+            if (enemy.PlayerIsDirectlyAvailable())
+            {
+                enemy.StateMachine.ChangeState(enemy.ChaseState);
+            }
+            else { 
+                enemy.StateMachine.ChangeState(enemy.SearchState);
+            }
         } 
-        else if(enemy.IsPlayerSeen)
+        if ((idleStartTime + maxIdleTime) <= Time.realtimeSinceStartup)
         {
-            enemy.StateMachine.ChangeState(enemy.SearchState);
+            enemy.newPatrolPoint();
+            enemy.StateMachine.ChangeState(enemy.PatrolState);
         }
     }
 

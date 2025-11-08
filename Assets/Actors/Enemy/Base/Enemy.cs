@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
@@ -16,6 +17,7 @@ public class Enemy : MonoBehaviour
     [field: SerializeField] private float speed;
     [field: SerializeField] private float notificationDistance = 100f;
     [field: SerializeField] private Transform? patrolEndpoint;
+    private Vector3 patrolEndpointPosition;
     [field: SerializeField] private LayerMask obstructionMask;
     [field: SerializeField] private LayerMask XrayMask;
 
@@ -29,12 +31,8 @@ public class Enemy : MonoBehaviour
 
     #region dectection & movement & attack
     public GameObject PlayerTarget { get; set; }
-    public Overlord overlord;
     public Transform AttackBox;
-
-    public bool isFacingRight { get; set; }
     public Vector3 playerLastPosition { get; set; }
-    public bool IsPlayerSeen { get; set; }
     public bool isAggroed { get; set; }
     private string currentAnimation = "";
 
@@ -59,11 +57,10 @@ public class Enemy : MonoBehaviour
         DieState = new EnemyDieState(this, StateMachine);
         SearchState = new EnemySearchState(this, StateMachine);
         PlayerTarget = GameObject.FindGameObjectWithTag("Player");
-        overlord = GameObject.FindFirstObjectByType<Overlord>();
 
 
-        EnemyChaseState.OnNotifyAboutPlayer += NotifyDetection;
-        Watch.OnNotifyAboutPlayer += NotifyDetection;
+        EnemyChaseState.OnNotifyAboutPlayer += GoAfterPlayer;
+        Watch.OnNotifyAboutPlayer += GoAfterPlayer;
     }
 
     private void Start()
@@ -85,7 +82,8 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            PatrolState = new EnemyPatrolState(this, StateMachine, patrolEndpoint);
+            patrolEndpointPosition = patrolEndpoint.position;
+            PatrolState = new EnemyPatrolState(this, StateMachine, patrolEndpointPosition);
             StateMachine.Initalize(PatrolState);
         }
     }
@@ -121,16 +119,16 @@ public class Enemy : MonoBehaviour
 
     private void OnDestroy()
     {
-        EnemyChaseState.OnNotifyAboutPlayer -= NotifyDetection;
-        Watch.OnNotifyAboutPlayer -= NotifyDetection;
+        EnemyChaseState.OnNotifyAboutPlayer -= GoAfterPlayer;
+        Watch.OnNotifyAboutPlayer -= GoAfterPlayer;
     }
 
-    private void NotifyDetection(Vector3 playerPos, Vector3 enemyPos)
+    private void GoAfterPlayer(Vector3 playerPos, Vector3 enemyPos)
     {
         if ((Vector3.Distance(transform.position, enemyPos) > notificationDistance) ||
             StateMachine.CurrentEnemyState == DieState ||
             StateMachine.CurrentEnemyState == AttackState ||
-            StateMachine.CurrentEnemyState == ChaseState 
+            StateMachine.CurrentEnemyState == ChaseState
             )
         {
             return;
@@ -138,6 +136,22 @@ public class Enemy : MonoBehaviour
         // Debug.Log("Notify distance: " + (Vector3.Distance(transform.position, enemyPos)));
         playerLastPosition = playerPos;
         StateMachine.ChangeState(SearchState);
+    }
+
+    public bool PlayerIsDirectlyAvailable()
+    {
+        Vector3 vector = new Vector3(0f, 0.3f, 0f);
+        float distance = (playerLastPosition - transform.position).magnitude;
+
+        Color drawColor = Color.red;
+        if(!Physics.Raycast(transform.position + vector, playerLastPosition + vector, distance, obstructionMask))
+        {
+            drawColor = Color.green;
+            Debug.DrawLine(transform.position + vector, playerLastPosition + vector, drawColor, 1.5f);
+            return true;
+        }
+        Debug.DrawLine(transform.position + vector, playerLastPosition + vector, drawColor, 1.5f);
+        return false;
     }
 
     // Returns true if stops
@@ -216,7 +230,7 @@ public class Enemy : MonoBehaviour
         float distance = Vector3.Distance(transform.position, playerLastPosition);
 
         // Ha a távolság nagyobb, mint a stopDistance, akkor mozgás
-        if (distance > 0.1f)
+        if (distance > 0.2f)
         {
             Vector3 direction = (position - transform.position).normalized;
 
@@ -235,8 +249,6 @@ public class Enemy : MonoBehaviour
     {
         NavMesh.CalculatePath(transform.position, playerLastPosition, NavMesh.AllAreas, path);
         currentCornerIndex = 1;
-        //Debug.Log("corner index: " + currentCornerIndex);
-        //Debug.Log("corner lenth: " + path.corners.Length);
     }
     public Vector3 GetNextMovePosition()
     {
@@ -281,7 +293,7 @@ public class Enemy : MonoBehaviour
         foreach (Transform child in parent)
         {
             listToFill.Add(child.gameObject);
-            GetAllChildrenRecursive(child, listToFill); // Rekurzív hívás a gyerek gyerekeire
+            GetAllChildrenRecursive(child, listToFill);
         }
     }
 
@@ -293,5 +305,41 @@ public class Enemy : MonoBehaviour
             anim.CrossFadeInFixedTime(animation, 0.2f);
         }
 
+    }
+
+    public void newPatrolPoint()
+    {
+        Vector3 startPosition = transform.position;
+        float distance = 2f;
+
+        Vector3[] surroundingPoints = new Vector3[8];
+        surroundingPoints[0] = startPosition + Vector3.forward * distance;
+        surroundingPoints[1] = startPosition + Vector3.back * distance;
+        surroundingPoints[2] = startPosition + Vector3.right * distance;
+        surroundingPoints[3] = startPosition + Vector3.left * distance;
+        surroundingPoints[4] = startPosition + Vector3.forward * distance + Vector3.right * distance;
+        surroundingPoints[5] = startPosition + Vector3.forward * distance + Vector3.left * distance;
+        surroundingPoints[6] = startPosition + Vector3.back * distance + Vector3.right * distance;
+        surroundingPoints[7] = startPosition + Vector3.back * distance + Vector3.left * distance;
+
+        for (int i = 0; i < surroundingPoints.Length; i++)
+        {
+            Debug.DrawLine(startPosition + new Vector3(0, 0.1f, 0), surroundingPoints[i] + new Vector3(0, 0.1f, 0), Color.green, 3f);
+
+            
+            if(NavMesh.CalculatePath(transform.position, surroundingPoints[i], NavMesh.AllAreas, path) &&
+                !Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), surroundingPoints[i] + new Vector3(0, 0.5f, 0), distance, obstructionMask))
+            {
+                patrolEndpointPosition = surroundingPoints[i];
+                break;
+            }
+        }
+
+        Debug.DrawLine(patrolEndpointPosition, patrolEndpointPosition + Vector3.up, Color.green, 3f);
+    }
+
+    public Vector3 GetPatrolEndpoint()
+    {
+        return patrolEndpointPosition;
     }
 }

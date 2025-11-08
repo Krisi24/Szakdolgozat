@@ -1,6 +1,6 @@
 using System;
+using UnityEditor;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class EnemyChaseState : EnemyState
 {
@@ -15,8 +15,6 @@ public class EnemyChaseState : EnemyState
         base.EnterState();
         enemy.XrayOn();
         enemy.ChangeAnimation("Run");
-        enemy.IsPlayerSeen = true;
-        //enemy.overlord.NotifyOthers(enemy.playerLastPosition, enemy);
         OnNotifyAboutPlayer?.Invoke(enemy.playerLastPosition, enemy.transform.position);
     }
     public override void ExitState()
@@ -27,15 +25,16 @@ public class EnemyChaseState : EnemyState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
-        if (!enemy.isAggroed)
-        {
-            enemy.StateMachine.ChangeState(enemy.IdleState);
-        }
     }
 
     public override void PhisicsUpdate()
     {
         base.PhisicsUpdate();
+        if (!enemy.isAggroed || !enemy.PlayerIsDirectlyAvailable())
+        {
+            enemy.StateMachine.ChangeState(enemy.SearchState);
+            return;
+        }
         if (enemy.MoveEnemyToPlayer())
         {
             enemy.StateMachine.ChangeState(enemy.AttackState);

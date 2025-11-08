@@ -8,16 +8,17 @@ public class EnemyPatrolState : EnemyState
     private Vector3 patrolEndpoint;
     private Vector3 patrolStartpoint;
     private bool isMovingBack = false;
-    public EnemyPatrolState(Enemy enemy, EnemyStateMachine enemyStateMachine, Transform patrolEndpoint) : base(enemy, enemyStateMachine)
+    public EnemyPatrolState(Enemy enemy, EnemyStateMachine enemyStateMachine, Vector3 patrolEndpoint) : base(enemy, enemyStateMachine)
     {
         patrolStartpoint = enemy.transform.position;
-        this.patrolEndpoint = patrolEndpoint.position;
+        this.patrolEndpoint = patrolEndpoint;
     }
 
     public override void EnterState()
     {
         base.EnterState();
-        //Debug.Log("Enter Patrol State");
+        patrolStartpoint = enemy.transform.position;
+        this.patrolEndpoint = enemy.GetPatrolEndpoint();
         enemy.ChangeAnimation("Walking");
     }
     public override void ExitState()
@@ -30,11 +31,14 @@ public class EnemyPatrolState : EnemyState
         base.FrameUpdate();
         if (enemy.isAggroed)
         {
-            enemy.StateMachine.ChangeState(enemy.ChaseState);
-        }
-        else if (enemy.IsPlayerSeen)
-        {
-            enemy.StateMachine.ChangeState(enemy.SearchState);
+            if (enemy.PlayerIsDirectlyAvailable())
+            {
+                enemy.StateMachine.ChangeState(enemy.ChaseState);
+            }
+            else
+            {
+                enemy.StateMachine.ChangeState(enemy.SearchState);
+            }
         }
     }
 
