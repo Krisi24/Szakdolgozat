@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 using static UnityEngine.GraphicsBuffer;
 using static UnityEngine.UI.GridLayoutGroup;
 
@@ -140,17 +141,12 @@ public class Enemy : MonoBehaviour
 
     public bool PlayerIsDirectlyAvailable()
     {
-        Vector3 vector = new Vector3(0f, 0.3f, 0f);
-        float distance = (playerLastPosition - transform.position).magnitude;
-
-        Color drawColor = Color.red;
-        if(!Physics.Raycast(transform.position + vector, playerLastPosition + vector, distance, obstructionMask))
+        NavMesh.CalculatePath(transform.position, playerLastPosition, NavMesh.AllAreas, path);
+            
+        if (path.status == NavMeshPathStatus.PathComplete && path.corners.Length == 2)
         {
-            drawColor = Color.green;
-            Debug.DrawLine(transform.position + vector, playerLastPosition + vector, drawColor, 1.5f);
             return true;
         }
-        Debug.DrawLine(transform.position + vector, playerLastPosition + vector, drawColor, 1.5f);
         return false;
     }
 
@@ -199,16 +195,12 @@ public class Enemy : MonoBehaviour
     {
         float distance = Vector3.Distance(transform.position, pos);
 
-        // Ha a távolság nagyobb, mint a stopDistance, akkor mozgás
-        if (distance > 2f)
+        if (distance > 0.5f)
         {
-            // A célpont irányának kiszámítása
             Vector3 direction = (pos - transform.position).normalized;
             Vector3 movement = direction * (speed / 3) * Time.deltaTime;
-            // Mozgás a célpont irányába
+            
             transform.position += movement;
-
-            //transform.LookAt(new Vector3(pos.x, transform.position.y, pos.z));
 
             Quaternion toRotation = Quaternion.LookRotation(movement, Vector3.up);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, 600 * Time.deltaTime);
@@ -252,25 +244,31 @@ public class Enemy : MonoBehaviour
     }
     public Vector3 GetNextMovePosition()
     {
-        if (currentCornerIndex == path.corners.Length)
+        if (path.corners.Length == 0)
         {
-            return playerLastPosition;
+            return transform.position;
         }
 
-        Debug.DrawRay(playerLastPosition, Vector3.up, Color.red);
-        if (Vector3.Distance(transform.position, path.corners[currentCornerIndex]) < 0.1f
-            && path.corners.Length > currentCornerIndex)
+        if (currentCornerIndex >= path.corners.Length)
         {
-            //Debug.Log("corner index: " + currentCornerIndex);
-            //Debug.Log("corner lenth: " + path.corners.Length);
+            return path.corners[path.corners.Length - 1];
+        }
+
+        Debug.DrawRay(path.corners[currentCornerIndex], Vector3.up * 2, Color.green);
+
+        if (Vector3.Distance(transform.position, path.corners[currentCornerIndex]) < 0.5f)
+        {
             currentCornerIndex++;
+
+            if (currentCornerIndex >= path.corners.Length)
+            {
+                return path.corners[path.corners.Length - 1];
+            }
         }
-        if (currentCornerIndex < path.corners.Length)
-        {
-            Debug.DrawRay(path.corners[currentCornerIndex], Vector3.up, Color.green);
-            return path.corners[currentCornerIndex];
-        }
-        return playerLastPosition;
+
+        // Visszaadjuk az aktuális cél sarokpontot.
+        return path.corners[currentCornerIndex];
+
     }
 
     public void XrayOn()
@@ -310,7 +308,7 @@ public class Enemy : MonoBehaviour
     public void newPatrolPoint()
     {
         Vector3 startPosition = transform.position;
-        float distance = 2f;
+        float distance = 5f;
 
         Vector3[] surroundingPoints = new Vector3[8];
         surroundingPoints[0] = startPosition + Vector3.forward * distance;
@@ -322,13 +320,13 @@ public class Enemy : MonoBehaviour
         surroundingPoints[6] = startPosition + Vector3.back * distance + Vector3.right * distance;
         surroundingPoints[7] = startPosition + Vector3.back * distance + Vector3.left * distance;
 
+        Vector3 diretion = (playerLastPosition - transform.position).normalized;
+
         for (int i = 0; i < surroundingPoints.Length; i++)
         {
             Debug.DrawLine(startPosition + new Vector3(0, 0.1f, 0), surroundingPoints[i] + new Vector3(0, 0.1f, 0), Color.green, 3f);
-
             
-            if(NavMesh.CalculatePath(transform.position, surroundingPoints[i], NavMesh.AllAreas, path) &&
-                !Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), surroundingPoints[i] + new Vector3(0, 0.5f, 0), distance, obstructionMask))
+            if( NavMesh.CalculatePath(transform.position, surroundingPoints[i], NavMesh.AllAreas, path) && path.corners.Length == 2)
             {
                 patrolEndpointPosition = surroundingPoints[i];
                 break;

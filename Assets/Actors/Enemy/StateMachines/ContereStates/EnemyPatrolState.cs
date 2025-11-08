@@ -18,8 +18,13 @@ public class EnemyPatrolState : EnemyState
     {
         base.EnterState();
         patrolStartpoint = enemy.transform.position;
-        this.patrolEndpoint = enemy.GetPatrolEndpoint();
+        patrolEndpoint = enemy.GetPatrolEndpoint();
+        isMovingBack = false;
         enemy.ChangeAnimation("Walking");
+
+        // Debug
+        Debug.DrawRay(patrolStartpoint, Vector3.up, Color.blue, 10f);
+        Debug.DrawRay(patrolEndpoint, Vector3.up, Color.cyan, 10f);
     }
     public override void ExitState()
     {
