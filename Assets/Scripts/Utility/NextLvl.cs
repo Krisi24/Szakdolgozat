@@ -7,6 +7,7 @@ public class NextLvl : MonoBehaviour
 
     private void OnTriggerEnter(Collider collision)
     {
+        GameManager.instance.SaveLevelData();
         SceneManager.LoadSceneAsync("Level " + sceneNumber.ToString());
     }
 }

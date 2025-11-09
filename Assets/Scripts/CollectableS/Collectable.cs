@@ -1,23 +1,26 @@
 using System;
 using UnityEngine;
+public enum CollectableType
+{
+    Bone,
+    Coin
+}
 
 public class Collectable : MonoBehaviour
 {
-    [SerializeField] private GameObject onCollectEffect;
-    [SerializeField] private float rotationSpeedY = 90f;
-    [SerializeField] private float rotationSpeedX = 0f;
-    [SerializeField] private bool countable = false;
-
-    public static event Action OnAwake;
-    public static event Action OnCollect;
+    public GameObject onCollectEffect;
+    public float rotationSpeedY = 90f;
+    public float rotationSpeedX = 0f;
+    [SerializeField] private CollectableType type = CollectableType.Bone;
 
     private void Awake()
     {
-        if (countable)
+        if (GameManager.instance != null)
         {
-            OnAwake?.Invoke();
+            GameManager.instance.RegisterCollectable(type);
         }
     }
+
     void Update()
     {
         transform.Rotate(0, rotationSpeedY * Time.deltaTime, rotationSpeedX * Time.deltaTime);
@@ -29,17 +32,13 @@ public class Collectable : MonoBehaviour
             if (onCollectEffect != null)
             {
                 GameObject spawnedEffect = Instantiate(onCollectEffect, transform.position, transform.rotation);
-                Destroy(spawnedEffect, 2f); // destroy particle after 2 sec
+                Destroy(spawnedEffect, 2f);
             }
             else
             {
                 Debug.LogWarning("There is no particle effect selected in the Inpector!");
             }
-
-            if (countable)
-            {
-                OnCollect?.Invoke();
-            }
+            GameManager.instance.UnregisterCollectable(type);
             Destroy(gameObject);
         }
     }

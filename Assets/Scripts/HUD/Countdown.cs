@@ -33,8 +33,6 @@ public class Countdown : MonoBehaviour
         Player.PlayerHasDied += ShowTextLoseMessage;
         OpenDoor.ShowToolTip += ShowInteractionText;
         OpenDoor.HideToolTip += HideInteractionText;
-        Collectable.OnAwake += IncrementCollectableCounter;
-        Collectable.OnCollect += IncrementCollectableCounterCollected;
     }
 
     private void ShowTextLoseMessage()
@@ -81,8 +79,6 @@ public class Countdown : MonoBehaviour
     private void Update()
     {
         UpdateTimer();
-
-
     }
 
     private void UpdateTimer()
@@ -112,7 +108,5 @@ public class Countdown : MonoBehaviour
         Player.PlayerHasDied -= ShowTextLoseMessage;
         OpenDoor.ShowToolTip -= ShowInteractionText;
         OpenDoor.HideToolTip -= HideInteractionText;
-        Collectable.OnAwake -= IncrementCollectableCounter;
-        Collectable.OnCollect -= IncrementCollectableCounterCollected;
     }
 }

@@ -6,18 +6,20 @@ public class MenuOptions : MonoBehaviour
 {
     public void StartNewPlay()
     {
-        SceneManager.LoadSceneAsync("Level 1");
+        GameManager.instance.ResetGame();
+        SceneManager.LoadScene("Level 1");
     }
 
     public void Restart()
     {
+        GameManager.instance.ResetCurrentLevel();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         Time.timeScale = 1;
     }
 
     public void MainMenu()
     {
-        SceneManager.LoadSceneAsync("MainMenu");
+        SceneManager.LoadScene("MainMenu");
         Time.timeScale = 1;
     }
 

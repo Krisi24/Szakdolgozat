@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5634532462982891454}
   - component: {fileID: 2093443782267337543}
   - component: {fileID: 7577995001462622847}
-  - component: {fileID: -526128097549482577}
+  - component: {fileID: 4725057488584128180}
   m_Layer: 0
   m_Name: collectable_rust_key
   m_TagString: Untagged
@@ -109,7 +109,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.11631206
   m_Center: {x: 0, y: -9.313228e-10, z: 0.000000003725291}
---- !u!114 &-526128097549482577
+--- !u!114 &4725057488584128180
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,7 +118,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 374289202576707483}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e9927599b3f66d48b930df2236f0966, type: 3}
+  m_Script: {fileID: 11500000, guid: 317aa11c7518ece40af5cb5cb2e0caad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   onCollectEffect: {fileID: 8771972552311404799, guid: 4faf1a432c1031249ba48c23cdb53ceb, type: 3}
+  rotationSpeedY: 90
+  rotationSpeedX: 0
+  activatableTarget: {fileID: 0}

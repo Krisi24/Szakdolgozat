@@ -414,8 +414,8 @@ GameObject:
   - component: {fileID: 1845272162407674261}
   - component: {fileID: 4234169629380820862}
   - component: {fileID: 7018960286951975888}
-  - component: {fileID: 4219226527032154540}
   - component: {fileID: 7444500017358340993}
+  - component: {fileID: 7010042579231649315}
   m_Layer: 5
   m_Name: Hud
   m_TagString: Untagged
@@ -512,27 +512,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &4219226527032154540
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3359725073171960413}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8fe47af2685da674ea3646700799e731, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  timerText: {fileID: 8884404402981304023}
-  interactionText: {fileID: 296637924480865452}
-  loseText: {fileID: 8847504181434405504}
-  restartButton: {fileID: 2801659320690477915}
-  mainMenuButton: {fileID: 1382472630582924421}
-  remainingTime: 900
-  collectableCounterText: {fileID: 7564598561485220244}
-  collectableCounterText2: {fileID: 4951539297814629217}
-  collectableName: Bones
 --- !u!114 &7444500017358340993
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -545,6 +524,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be087a7a300962c44b84bfeab3456c4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7010042579231649315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3359725073171960413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8caf93e42084cd143b81f2519ff90b84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timerText: {fileID: 8884404402981304023}
+  interactionText: {fileID: 296637924480865452}
+  loseText: {fileID: 8847504181434405504}
+  restartButton: {fileID: 2801659320690477915}
+  mainMenuButton: {fileID: 1382472630582924421}
+  remainingTime: 600
+  boneCounterText: {fileID: 7564598561485220244}
+  coinCounterText: {fileID: 4951539297814629217}
 --- !u!1 &3953513503255292099
 GameObject:
   m_ObjectHideFlags: 0

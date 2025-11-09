@@ -1,8 +1,11 @@
 using UnityEngine;
 
-public class collectable_key : MonoBehaviour
+public class CollectableKey : MonoBehaviour
 {
-    [SerializeField] public MonoBehaviour activatableTarget = null;
+    public GameObject onCollectEffect;
+    public float rotationSpeedY = 90f;
+    public float rotationSpeedX = 0f;
+    public MonoBehaviour activatableTarget = null;
     private Activate activationInterface = null;
 
     void Start()
@@ -23,24 +26,35 @@ public class collectable_key : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        transform.Rotate(0, rotationSpeedY * Time.deltaTime, rotationSpeedX * Time.deltaTime);
+    }
+
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            // MOST MÁR AZ activationInterface-et használjuk, ami már ellenõrzötten létezik (vagy null)
             if (activationInterface != null)
             {
-                activationInterface.Activation(); // Meghívjuk az Activate interface metódusát
-                Debug.Log("Collectable Key: Kulcs felvéve, 'Activation()' meghívva az " + activatableTarget.name + " objektumon keresztül.");
+                activationInterface.Activation();
             }
             else
             {
-                // Ez az ág akkor fut le, ha a Start() során nem találtunk interface-t,
-                // vagy ha valamilyen okból mégis null maradt a referencia (pl. dinamikus törlés).
-                Debug.LogError("Collectable Key: 'Player' felvette a kulcsot, de az 'activatableTarget' nem implementálja az 'Activate' interface-t, vagy az objektum null! Nem sikerült az aktiválás.");
+                Debug.LogError("Collectable Key: Player picked up the key, but the activation has failed!");
             }
-
-            //gameObject.SetActive(false);
+            if (onCollectEffect != null)
+            {
+                GameObject spawnedEffect = Instantiate(onCollectEffect, transform.position, transform.rotation);
+                Destroy(spawnedEffect, 2f);
+            }
+            else
+            {
+                Debug.LogWarning("There is no particle effect selected in the Inpector!");
+            }
+            Destroy(gameObject);
         }
     }
+
+
 }
