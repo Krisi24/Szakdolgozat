@@ -3,7 +3,8 @@ using UnityEngine;
 public class ThrowState : PlayerState
 {
     private float cooldownTime = 2.5f;
-    private float nextfireTime = 0f;
+    private float exitStateTime = 0f;
+    private float spawnThroableTime = Mathf.Infinity;
     public GameObject EnemyTarget { get; set; }
 
     public Transform AttackBox;
@@ -20,8 +21,8 @@ public class ThrowState : PlayerState
     {
         base.EnterState();
         player.ChangeAnimation("Throw");
-        nextfireTime = Time.time + cooldownTime;
-        Throw();
+        exitStateTime = Time.time + cooldownTime;
+        spawnThroableTime = Time.time + ((2f + 23f/60) / 2);
     }
 
     public override void ExitState()
@@ -32,7 +33,12 @@ public class ThrowState : PlayerState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
-        if(nextfireTime < Time.time)
+        if(spawnThroableTime < Time.time)
+        {
+            player.SpawnThroable();
+            spawnThroableTime = Mathf.Infinity;
+        }
+        if(exitStateTime < Time.time)
         {
             player.StateMachine.ChangeState(player.IdleState);
         }
@@ -41,10 +47,5 @@ public class ThrowState : PlayerState
     public override void PhisicsUpdate()
     {
         base.PhisicsUpdate();
-    }
-
-    private void Throw()
-    {
-        Debug.Log("throw");
     }
 }

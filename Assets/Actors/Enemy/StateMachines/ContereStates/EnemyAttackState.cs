@@ -17,10 +17,9 @@ public class EnemyAttackState : EnemyState
 
     public override void EnterState()
     {
-        //Debug.Log("Enter Attack State");
         base.EnterState();
         enemy.ChangeAnimation("Attack");
-        enemy.StartCoroutine(WaitForAttackToEnd()); // Várakoztatás, hogy befejezze
+        enemy.StartCoroutine(WaitForAttackToEnd());
     }
 
     public override void ExitState()
@@ -43,7 +42,7 @@ public class EnemyAttackState : EnemyState
     private IEnumerator WaitForAttackToEnd()
     {
         Attack();
-        yield return new WaitForSeconds(cooldownTime); // Megvárja a támadás végét
+        yield return new WaitForSeconds(cooldownTime);
         if (enemy.StateMachine.CurrentEnemyState != enemy.DieState)
         {
             enemy.StateMachine.ChangeState(enemy.SearchState);
@@ -52,15 +51,13 @@ public class EnemyAttackState : EnemyState
 
     void Attack()
     {
-        //Debug.Log("Attack happend");
         Collider[] hitEnemies = Physics.OverlapBox(AttackBox.position, attackRange, attackBoxRotation);
 
         foreach (Collider enemy in hitEnemies)
         {
-            //Debug.Log("hit enemy by AI: " + enemy.name);
             if (!enemy.isTrigger)
             {
-                Player enemyComponent = enemy.GetComponent<Player>();  // Ellenõrizzük, hogy van-e PLayer
+                Player enemyComponent = enemy.GetComponent<Player>();
                 if (enemyComponent != null)
                 {
                     enemyComponent.Damage(damage);

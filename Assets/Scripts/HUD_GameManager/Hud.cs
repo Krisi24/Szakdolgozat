@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -8,10 +9,14 @@ public class Hud : MonoBehaviour
     [SerializeField] private TextMeshProUGUI loseText;
     [SerializeField] private GameObject restartButton;
     [SerializeField] private GameObject mainMenuButton;
+    [SerializeField] private GameObject payOffMenu;
     [SerializeField] float remainingTime = 600f;
 
     [SerializeField] private TMP_Text boneCounterText;
     [SerializeField] private TMP_Text coinCounterText;
+
+    private Action playerHasDied = null;
+    private Enemy chosenEnemy;
 
     public static Hud instance;
     private void Awake()
@@ -26,11 +31,20 @@ public class Hud : MonoBehaviour
             Destroy(gameObject);
         }
 
+        Player.PlayerHasDied += ShowTextLoseMessage;
+    }
+    private void Start()
+    {
         GameManager.instance.SetHud(this);
     }
     private void Update()
     {
         UpdateTimer();
+    }
+
+    private void OnDestroy()
+    {
+        Player.PlayerHasDied -= ShowTextLoseMessage;
     }
 
     private void UpdateTimer()
@@ -89,5 +103,25 @@ public class Hud : MonoBehaviour
     private void HideInteractionText()
     {
         interactionText.gameObject.SetActive(false);
+    }
+
+    public void HidePayOffMenu()
+    {
+        payOffMenu.gameObject.SetActive(false);
+        Time.timeScale = 1;
+    }
+
+    public void ShowPayOffIntecractionMenu(Enemy enemy)
+    {
+        chosenEnemy = enemy;
+        payOffMenu.gameObject.SetActive(true);
+        Time.timeScale = 0;
+    }
+
+    public void PayOffGuard()
+    {
+        GameManager.instance.UseCollectable(CollectableType.Coin);
+        chosenEnemy.GetPaidOff();
+        Debug.Log("pay off interaction");
     }
 }

@@ -1,13 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UIElements;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.UI.GridLayoutGroup;
 
 public class Enemy : MonoBehaviour
 {
@@ -47,6 +40,8 @@ public class Enemy : MonoBehaviour
     public EnemyDieState DieState { get; set; }
     public EnemySearchState SearchState { get; set; }
     public EnemyPatrolState PatrolState { get; set; }
+    public EnemyDistractedState DistractedState{ get; set; }
+    public EnemyWalkAwayState WalkAwayState{ get; set; }
     #endregion
 
     private void Awake()
@@ -57,6 +52,7 @@ public class Enemy : MonoBehaviour
         AttackState = new EnemyAttackState(this, StateMachine, AttackBox);
         DieState = new EnemyDieState(this, StateMachine);
         SearchState = new EnemySearchState(this, StateMachine);
+        WalkAwayState = new EnemyWalkAwayState(this, StateMachine);
         PlayerTarget = GameObject.FindGameObjectWithTag("Player");
 
 
@@ -79,6 +75,8 @@ public class Enemy : MonoBehaviour
 
         if (patrolEndpoint == null)
         {
+            patrolEndpointPosition = transform.position;
+            PatrolState = new EnemyPatrolState(this, StateMachine, patrolEndpointPosition);
             StateMachine.Initalize(IdleState);
         }
         else
@@ -102,7 +100,7 @@ public class Enemy : MonoBehaviour
     {
         if (!isAggroed)
         {
-            //StateMachine.ChangeState();
+            gameObject.GetComponent<EnemyVisionCheck>().enabled = true;
         }
         //Debug.Log("Health: " + CurrentHealth + "_Damage: " + damageAmount);
         CurrentHealth -= damageAmount;
@@ -134,7 +132,6 @@ public class Enemy : MonoBehaviour
         {
             return;
         }
-        // Debug.Log("Notify distance: " + (Vector3.Distance(transform.position, enemyPos)));
         playerLastPosition = playerPos;
         StateMachine.ChangeState(SearchState);
     }
@@ -219,21 +216,18 @@ public class Enemy : MonoBehaviour
 
     public bool MoveEnemyToPosSmart(Vector3 position)
     {
-        float distance = Vector3.Distance(transform.position, playerLastPosition);
+        float distance = Vector3.Distance(transform.position, position);
 
-        // Ha a távolság nagyobb, mint a stopDistance, akkor mozgás
-        if (distance > 0.2f)
+        if (distance > 0.5f)
         {
             Vector3 direction = (position - transform.position).normalized;
 
-            // Mozgás a célpont irányába
             transform.position += direction * speed * Time.deltaTime;
 
             transform.LookAt(new Vector3(position.x, transform.position.y, position.z));
-            //_navMeshAgent.SetDestination(position);
+
             return false;
         }
-        //_navMeshAgent.SetDestination(transform.position);
         return true;
     }
 
@@ -242,6 +236,13 @@ public class Enemy : MonoBehaviour
         NavMesh.CalculatePath(transform.position, playerLastPosition, NavMesh.AllAreas, path);
         currentCornerIndex = 1;
     }
+
+    public void SetRouteToObject(Vector3 position)
+    {
+        NavMesh.CalculatePath(transform.position, position, NavMesh.AllAreas, path);
+        currentCornerIndex = 1;
+    }
+
     public Vector3 GetNextMovePosition()
     {
         if (path.corners.Length == 0)
@@ -339,5 +340,25 @@ public class Enemy : MonoBehaviour
     public Vector3 GetPatrolEndpoint()
     {
         return patrolEndpointPosition;
+    }
+
+    public void GetDistracted(GameObject distractionObject)
+    {
+        EnemyChaseState.OnNotifyAboutPlayer -= GoAfterPlayer;
+        Watch.OnNotifyAboutPlayer -= GoAfterPlayer;
+        DistractedState = new EnemyDistractedState(this, StateMachine, distractionObject);
+        StateMachine.ChangeState(DistractedState);
+    }
+
+    public void GetPaidOff()
+    {
+        EnemyChaseState.OnNotifyAboutPlayer -= GoAfterPlayer;
+        Watch.OnNotifyAboutPlayer -= GoAfterPlayer;
+        StateMachine.ChangeState(WalkAwayState);
+    }
+
+    public bool IsPaidOff()
+    {
+        return StateMachine.CurrentEnemyState == WalkAwayState;
     }
 }

@@ -10,7 +10,6 @@ public class MoveState : PlayerState
     public override void EnterState()
     {
         base.EnterState();
-        player.InputLvlZero();
         if (player.IsCrouches())
         {
             player.ChangeAnimation("Crouched Walking");

@@ -805,6 +805,7 @@ GameObject:
   - component: {fileID: 808702320111160975}
   - component: {fileID: 8239916990629208823}
   - component: {fileID: 2192994418679346968}
+  - component: {fileID: 5685094649214951819}
   m_Layer: 7
   m_Name: Dog
   m_TagString: Enemy
@@ -822,7 +823,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.28635725, z: 0, w: 0.95812297}
   m_LocalPosition: {x: -1.6315856, y: -2.3763413e-17, z: 1.0702089}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_LocalScale: {x: 0.40000004, y: 0.4, z: 0.40000004}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 497144}
@@ -930,7 +931,6 @@ MonoBehaviour:
   XrayMask:
     serializedVersion: 2
     m_Bits: 256
-  overlord: {fileID: 0}
   AttackBox: {fileID: 6307991626327724970}
 --- !u!114 &8239916990629208823
 MonoBehaviour:
@@ -945,11 +945,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radius: 20
+  surroundingRadius: 1.5
   angle: 180
-  playerLayer:
+  playerLayerMask:
     serializedVersion: 2
     m_Bits: 8
-  obstructionMask:
+  obstructionLayerMask:
     serializedVersion: 2
     m_Bits: 64
 --- !u!195 &2192994418679346968
@@ -974,6 +975,18 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 1
   m_ObstacleAvoidanceType: 4
+--- !u!114 &5685094649214951819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 175852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ea6eaa5608aa2d40a9b271aec0ea8dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &176664
 GameObject:
   m_ObjectHideFlags: 0

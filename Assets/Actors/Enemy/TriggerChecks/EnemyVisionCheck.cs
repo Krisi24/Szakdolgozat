@@ -133,8 +133,8 @@ public class EnemyVisionCheck : MonoBehaviour
 
             if (Vector3.Angle(transform.forward, directionOfTarget) < angle / 2)
             {
-                Debug.DrawLine(eyesPosition, transform.position + hight + directionOfTarget * distance, Color.yellow, 1f);
-                Debug.DrawLine(eyesPosition, transform.position + hight + directionOfTargetLow * distance, Color.yellow, 1f);
+                Debug.DrawLine(eyesPosition, transform.position + hight + directionOfTarget * distance, Color.yellow, 0f);
+                Debug.DrawLine(eyesPosition, transform.position + hight + directionOfTargetLow * distance, Color.yellow, 0f);
             }
         }
     }

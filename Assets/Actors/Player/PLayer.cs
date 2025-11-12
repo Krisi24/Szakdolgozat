@@ -7,6 +7,10 @@ using static UnityEngine.EventSystems.EventTrigger;
 public class Player : MonoBehaviour, IDamagable
 {
 
+    public GameObject noBoneSignal;
+    public GameObject bone;
+    public Transform rightHandTransform;
+
     private Rigidbody rb;
     [SerializeField] private float runSpeed = 6f;
     [SerializeField] private float crouchSpeed = 3f;
@@ -153,21 +157,56 @@ public class Player : MonoBehaviour, IDamagable
     }
     private void OnMove()
     {
+        InputLvlZero();
         StateMachine.ChangeState(MoveState);
+    }
+    private void OnSpecialMove()
+    {
+        if (GameManager.instance.GetAvaiableBones() > 0)
+        {
+            InputLvlTwo();
+            GameManager.instance.UseCollectable(CollectableType.Bone);
+            StateMachine.ChangeState(ThrowState);
+        }
+        else
+        {
+            if (noBoneSignal != null)
+            {
+                GameObject instance = Instantiate(noBoneSignal, transform.position, Quaternion.identity);
+                Destroy(instance, 2f);
+            }
+            else
+            {
+                Debug.Log("NoBoneSignal GameObject is not set! Cannot Insitatate on specialmove!");
+            }
+        }
     }
     private void OnInteract()
     {
+        // check interactive
         if (interactive != null)
         {
             interactive.Activation();
         }
-    }
 
+        // check pay off
+        if(GameManager.instance.GetAvaiableCoins() > 0)
+        {
+            Collider[] surroundingCheck = Physics.OverlapSphere(transform.position, 3f, LayerMask.GetMask("Enemy"));
+
+            if (surroundingCheck.Length == 1 &&
+                surroundingCheck[0].GetComponent<Dog>() == null &&
+                !surroundingCheck[0].GetComponent<Enemy>().IsPaidOff())
+            {
+                Hud.instance.ShowPayOffIntecractionMenu(surroundingCheck[0].GetComponent<Enemy>());
+            }
+        }
+
+    }
     public void SetInteractive(Activate newInteractive)
     {
         interactive = newInteractive;
     }
-
     public void ForgetInteractive(Activate newInteractive)
     {
         if (interactive != newInteractive) {
@@ -175,12 +214,6 @@ public class Player : MonoBehaviour, IDamagable
         {
             interactive = null;
         }
-    }
-
-    private void OnSpecialMove()
-    {
-        InputLvlOne();
-        StateMachine.ChangeState(ThrowState);
     }
     public void InputLvlZero()
     {
@@ -293,6 +326,20 @@ public class Player : MonoBehaviour, IDamagable
     {
         Quaternion toRotation = Quaternion.LookRotation(velocity, Vector3.up);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
+    }
+
+    public void SpawnThroable()
+    {
+        // velocity
+        Vector3 throwDirection = (transform.forward + Vector3.up).normalized;
+        float force = 5f;
+        GameObject newBone = Instantiate(bone, rightHandTransform.position, Quaternion.identity);
+        Rigidbody newBoneRB = newBone.GetComponent<Rigidbody>();
+        newBoneRB.linearVelocity = throwDirection * force;
+        // spinning
+        float spinForce = 5f;
+        Vector3 randomTorque = UnityEngine.Random.insideUnitSphere * spinForce;
+        newBoneRB.AddTorque(randomTorque, ForceMode.VelocityChange);
     }
 
 }

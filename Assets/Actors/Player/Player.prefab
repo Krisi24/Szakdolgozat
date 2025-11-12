@@ -45,7 +45,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ad38653d5d1fda4db17c740bc527523, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 9.13
+      value: 164
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ad38653d5d1fda4db17c740bc527523, type: 3}
       propertyPath: m_LocalPosition.y
@@ -53,7 +53,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ad38653d5d1fda4db17c740bc527523, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 5.47
+      value: 77.7
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ad38653d5d1fda4db17c740bc527523, type: 3}
       propertyPath: m_LocalRotation.w
@@ -478,6 +478,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40d6e9529389b3d44bba421422fb562b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  noBoneSignal: {fileID: 5026094677383800061, guid: 9ce368ac9d8d7fe4baffe002cd3c92ac, type: 3}
+  bone: {fileID: 2406268257839720675, guid: 711ee560525b50f47abbbc8add58de41, type: 3}
+  rightHandTransform: {fileID: 1738119401189223566}
   runSpeed: 6
   crouchSpeed: 3
   rollSpeed: 7
@@ -516,6 +519,11 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!4 &1738119401189223566 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1852576806548013000, guid: 4ad38653d5d1fda4db17c740bc527523, type: 3}
+  m_PrefabInstance: {fileID: 120091583322444614}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3450393790706765046
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -619,6 +627,10 @@ PrefabInstance:
     - target: {fileID: 8934455569681677112, guid: 992f85face06da84eba14f7a590d9908, type: 3}
       propertyPath: m_Layer
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8934455569681677112, guid: 992f85face06da84eba14f7a590d9908, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

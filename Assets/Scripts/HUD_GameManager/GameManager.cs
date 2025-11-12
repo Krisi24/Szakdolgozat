@@ -5,8 +5,8 @@ public class GameManager : MonoBehaviour
 {
     // time
     public float timeLimit = 600f;
-    private float remainingTime;
     private float remainingTimeFromLastLvl;
+    private float remainingTime;
     private Hud Hud;
 
     // collectables
@@ -34,6 +34,8 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        ResetGame();
     }
 
     private void OnEnable()
@@ -48,7 +50,6 @@ public class GameManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        //FindCurrentHud();
         if (Hud != null)
         {
             Hud.SetRemainingTime(remainingTimeFromLastLvl);
@@ -98,6 +99,11 @@ public class GameManager : MonoBehaviour
         coinCountAvaiable = 0;
     }
 
+    public void SetHud(Hud newHud)
+    {
+        Hud = newHud;
+        Hud.UpdateAllCollectable(boneCountAvaiable, coinCountAvaiable, boneCountAll, coinCountAll);
+    }
     // Collectable counters
     public void RegisterCollectable(CollectableType c)
     {
@@ -141,20 +147,35 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void FindCurrentHud()
+    public void UseCollectable(CollectableType c)
     {
-        if (Hud == null)
+        switch (c)
         {
-            Hud = Hud.instance;
-        } else
+            case CollectableType.Bone:
+                boneCountAvaiable--;
+                break;
+            case CollectableType.Coin:
+                coinCountAvaiable--;
+                break;
+            default: Debug.Log("Undefined Collectable Type tried to unregister!"); break;
+        }
+        if (Hud != null)
         {
-            Debug.Log("Unable to find Hud element in the scene!");
+            Hud.UpdateAllCollectable(boneCountAvaiable, coinCountAvaiable, boneCountAll, coinCountAll);
+        }
+        else
+        {
+            Debug.Log("Hud is not set -> unable to update Collectable Counter!");
         }
     }
 
-    public void SetHud(Hud newHud)
+    public int GetAvaiableBones()
     {
-        Hud = newHud;
-        Hud.UpdateAllCollectable(boneCountAvaiable, coinCountAvaiable, boneCountAll, coinCountAll);
+        return boneCountAvaiable;
+    }
+
+    public int GetAvaiableCoins()
+    {
+        return coinCountAvaiable;
     }
 }
