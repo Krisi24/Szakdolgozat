@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class Hud : MonoBehaviour
 {
@@ -107,6 +108,7 @@ public class Hud : MonoBehaviour
 
     public void HidePayOffMenu()
     {
+        GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().InputLvlZero();
         payOffMenu.gameObject.SetActive(false);
         Time.timeScale = 1;
     }
@@ -123,5 +125,15 @@ public class Hud : MonoBehaviour
         GameManager.instance.UseCollectable(CollectableType.Coin);
         chosenEnemy.GetPaidOff();
         Debug.Log("pay off interaction");
+    }
+
+    public void TurnOffEnemyVision()
+    {
+        chosenEnemy.GetComponent<EnemyVisionCheck>().EndSearch();
+    }
+
+    public void TurnOnEnemyVision()
+    {
+        chosenEnemy.GetComponent<EnemyVisionCheck>().StartSearch();
     }
 }

@@ -9183,7 +9183,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 441387766841849005, guid: 0b1b5ec8944fa2743ad41abfcfcf9b8d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 164
+      value: 12.8
       objectReference: {fileID: 0}
     - target: {fileID: 441387766841849005, guid: 0b1b5ec8944fa2743ad41abfcfcf9b8d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -9191,7 +9191,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 441387766841849005, guid: 0b1b5ec8944fa2743ad41abfcfcf9b8d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 77.7
+      value: 5.02
       objectReference: {fileID: 0}
     - target: {fileID: 441387766841849005, guid: 0b1b5ec8944fa2743ad41abfcfcf9b8d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -11298,10 +11298,6 @@ PrefabInstance:
       propertyPath: patrolEndpoint
       value: 
       objectReference: {fileID: 653613718}
-    - target: {fileID: 695071410140741303, guid: e7b7d53681f50234aa20385916698e5a, type: 3}
-      propertyPath: notificationDistance
-      value: 50
-      objectReference: {fileID: 0}
     - target: {fileID: 3575194311779333260, guid: e7b7d53681f50234aa20385916698e5a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

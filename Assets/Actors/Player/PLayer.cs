@@ -198,6 +198,7 @@ public class Player : MonoBehaviour, IDamagable
                 surroundingCheck[0].GetComponent<Dog>() == null &&
                 !surroundingCheck[0].GetComponent<Enemy>().IsPaidOff())
             {
+                InputLvlTwo();
                 Hud.instance.ShowPayOffIntecractionMenu(surroundingCheck[0].GetComponent<Enemy>());
             }
         }

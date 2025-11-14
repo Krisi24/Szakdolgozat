@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEditor;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class EnemyVisionCheck : MonoBehaviour
 {
@@ -15,32 +14,31 @@ public class EnemyVisionCheck : MonoBehaviour
     private GameObject player;
     private Vector3  hight = new Vector3(0f, 1.5f,0f);
 
+    private bool search = false;
+
     private void Start()
     {
-        enemy = GetComponentInParent<Enemy>();
+        enemy = GetComponent<Enemy>();
         player = GameObject.FindGameObjectWithTag("Player");
-        StartCoroutine(FOVRoutine());
+        StartSearch();
+    }
+
+    private void Update()
+    {
+        if (search)
+        {
+            FieldOfViewCheck();
+        }
     }
 
     public void StartSearch()
     {
-        StartCoroutine("FOVRoutine");
+        search = true;
     }
 
     public void EndSearch()
     {
-        StopCoroutine("FOVRoutine");
-    }
-
-    private IEnumerator FOVRoutine()
-    {
-        WaitForSeconds wait = new WaitForSeconds(0.2f);
-
-        while (true)
-        {
-            yield return wait;
-            FieldOfViewCheck();
-        }
+        search = false;
     }
 
     private void SurroundingCheck()
@@ -87,6 +85,11 @@ public class EnemyVisionCheck : MonoBehaviour
 
     public bool TargetIsReachable()
     {
+        if(!search)
+        {
+            return false;
+        }
+
         Vector3 legHight = new Vector3(0, 0.5f, 0);
         float distance = (player.transform.position - transform.position).magnitude;
         Vector3 directionOfTarget = (player.transform.position - transform.position).normalized;

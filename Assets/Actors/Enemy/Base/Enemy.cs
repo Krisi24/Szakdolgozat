@@ -4,7 +4,6 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
-
     [field: SerializeField] private float MaxHealth { get; set; } = 100f;
     float CurrentHealth { get; set; }
     [field: SerializeField] private float stopDistance;
@@ -13,6 +12,7 @@ public class Enemy : MonoBehaviour
     [field: SerializeField] private Transform? patrolEndpoint;
     private Vector3 patrolEndpointPosition;
     [field: SerializeField] private LayerMask obstructionMask;
+    [field: SerializeField] private LayerMask enemyLayer;
     [field: SerializeField] private LayerMask XrayMask;
 
     private bool isXrayOn = false;
@@ -22,6 +22,16 @@ public class Enemy : MonoBehaviour
     private int currentCornerIndex = 1;
     public Animator anim { get; set; }
     public Rigidbody RB { get; set; }
+
+    #region avoid
+
+    private Vector3 offsetHeight = new Vector3(0f, 0.5f, 0f);
+    private Vector3 offsetRight;
+    private Vector3 offsetLeft;
+
+    private float avoidDistance = 1f;
+
+    #endregion
 
     #region dectection & movement & attack
     public GameObject PlayerTarget { get; set; }
@@ -127,6 +137,7 @@ public class Enemy : MonoBehaviour
         if ((Vector3.Distance(transform.position, enemyPos) > notificationDistance) ||
             StateMachine.CurrentEnemyState == DieState ||
             StateMachine.CurrentEnemyState == AttackState ||
+            StateMachine.CurrentEnemyState == WalkAwayState ||
             StateMachine.CurrentEnemyState == ChaseState
             )
         {
@@ -148,39 +159,114 @@ public class Enemy : MonoBehaviour
     }
 
     // Returns true if stops
+    // moves enemy to player except there is another enemy is in front of it
     public bool MoveEnemyToPlayer()
     {
         float distance = Vector3.Distance(transform.position, PlayerTarget.transform.position);
+        Vector3 pointToLookAt = new Vector3(PlayerTarget.transform.position.x, transform.position.y, PlayerTarget.transform.position.z);
 
-        // Ha a távolság nagyobb, mint a stopDistance, akkor mozgás
         if (distance > stopDistance)
         {
-            // A célpont irányának kiszámítása
-            Vector3 direction = (PlayerTarget.transform.position - transform.position).normalized;
-
-            // Mozgás a célpont irányába
-            transform.position += direction * speed * Time.deltaTime;
-
-            transform.LookAt(new Vector3(PlayerTarget.transform.position.x, transform.position.y, PlayerTarget.transform.position.z));
-
+            // enemy have to move closer
+            if (AvoidEnemies())
+            {
+                // enemy didnt need to avoid enemy
+                Vector3 direction = (PlayerTarget.transform.position - transform.position).normalized;
+                transform.position += direction * speed * Time.deltaTime;
+                transform.LookAt(pointToLookAt);
+            }
             return false;
         }
         return true;
     }
 
+    // true -> there is no enemy ahead
+    // false -> there is enemy ahead, this func. had to avoid enemy
+    private bool AvoidEnemies()
+    {
+        offsetRight = transform.right * 0.25f;
+        offsetLeft = -transform.right * 0.25f;
+        Vector3 checkStartPos = transform.position + offsetHeight;
+        // check forward
+        if (Physics.Raycast(transform.position + offsetHeight + offsetRight, transform.forward, avoidDistance, enemyLayer) ||
+            Physics.Raycast(transform.position + offsetHeight + offsetLeft, transform.forward, avoidDistance, enemyLayer))
+        {
+            return true;
+        }
+
+        float radius = avoidDistance;
+        float angleStep = 15f;
+        float fullAngle = 180f;
+        List<Vector3> pointList = GetPointsAroundEnemyForward(angleStep, radius, fullAngle); // 90fok -> 6 point
+        // point order at 90 degree -> 3, 4, 2, 5, 1, 6
+
+        int[] order = GetCheckOrderForAvoidEnemies((int)angleStep, (int)fullAngle);
+        
+        for (int i = 0; i < order.Length; i++) {
+            if(CheckPointForEnemy(checkStartPos, pointList[order[i]] + offsetHeight)) continue;
+            else
+            {
+                MoveEnemyToPos(pointList[order[i]]);
+                return false;
+            }
+        }
+        // Todo.. Refactor
+        return true;
+    }
+
+    // false -> there is no enemy
+    // true -> there is a enemy
+    private bool CheckPointForEnemy(Vector3 startPos, Vector3 pointToCheck)
+    {
+        Vector3 direction = (startPos - pointToCheck).normalized;
+        if(!Physics.Raycast(startPos, direction, avoidDistance, enemyLayer))
+        {
+            Debug.DrawLine(startPos, pointToCheck * avoidDistance, Color.green, 3f);
+            return false;
+        }
+        Debug.DrawLine(startPos, pointToCheck * avoidDistance, Color.red, 2f);
+        return true;
+    }
+    private List<Vector3> GetPointsAroundEnemyForward(float angleStep, float radius, float checkAngle = 180f)
+    {
+        // result list
+        List<Vector3> pointList = new List<Vector3>();
+        // auxiliary variables
+        float startAngle = -(checkAngle / 2) + transform.eulerAngles.y;
+        float endAngle = (checkAngle / 2) + transform.eulerAngles.y;
+
+        for (float i = startAngle; i < endAngle; i += angleStep)
+        {
+            float radian = i * Mathf.Deg2Rad;
+            float x = Mathf.Cos(radian) * radius;
+            float z = Mathf.Sin(radian) * radius;
+
+            pointList.Add(transform.position + new Vector3(x, 0, z));
+            Debug.DrawRay(transform.position + new Vector3(x, 0, z), Vector3.up);
+        }
+
+        return pointList;
+    }
+
+    private int[] GetCheckOrderForAvoidEnemies(int angleStep, int fullAngle)
+    {
+        int listLength = fullAngle / angleStep;
+        int[] order = new int[listLength];
+
+        for (int i = 0; i < listLength; i++) {
+            if(i % 2 == 0)  order[i] = (listLength / 2) + (i / 2);
+            else            order[i] = (listLength / 2) - ((i / 2) + 1);
+        }
+        return order;
+    }
+
     public bool MoveEnemyToLastSeenPos()
     {
         float distance = Vector3.Distance(transform.position, playerLastPosition);
-
-        // Ha a távolság nagyobb, mint a stopDistance, akkor mozgás
         if (distance > 0.1f)
         {
-            // A célpont irányának kiszámítása
             Vector3 direction = (playerLastPosition - transform.position).normalized;
-
-            // Mozgás a célpont irányába
             transform.position += direction * speed * Time.deltaTime;
-
             transform.LookAt(new Vector3(playerLastPosition.x, transform.position.y, playerLastPosition.z));
 
             return false;
@@ -212,6 +298,13 @@ public class Enemy : MonoBehaviour
         Vector3 directionToTarget = PlayerTarget.transform.position - transform.position;
         Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 450 * Time.deltaTime);
+    }
+
+    // false -> turn left 
+    // true -> turn right
+    public void TurnLeftOrRight(bool right)
+    {
+        transform.Rotate(0, right ? -450 * Time.deltaTime : 450 * Time.deltaTime, 0);
     }
 
     public bool MoveEnemyToPosSmart(Vector3 position)
@@ -342,6 +435,7 @@ public class Enemy : MonoBehaviour
         return patrolEndpointPosition;
     }
 
+    // distraction
     public void GetDistracted(GameObject distractionObject)
     {
         EnemyChaseState.OnNotifyAboutPlayer -= GoAfterPlayer;

@@ -2,8 +2,11 @@ using UnityEngine;
 
 public class EnemyWalkAwayState : EnemyState
 {
-    private Vector3 offset = new Vector3(0f, 0.5f, 0f);
+    private Vector3 offsetHeight = new Vector3(0f, 0.5f, 0f);
+    private Vector3 offsetRight;
+    private Vector3 offsetLeft;
     private LayerMask obstructionLayerMask = LayerMask.GetMask("obstruction");
+    private float avoidDistance = 1.5f;
     public EnemyWalkAwayState(Enemy enemy, EnemyStateMachine enemyStateMachine) : base(enemy, enemyStateMachine)
     {
     }
@@ -25,20 +28,64 @@ public class EnemyWalkAwayState : EnemyState
 
     public override void PhisicsUpdate()
     {
-        if (Physics.Raycast(enemy.transform.position + offset, Vector3.forward, 2f, obstructionLayerMask))
+        //AvoidObstaclesVersion1();
+        AvoidObstaclesVersion2();
+    }
+
+    /*
+    private void AvoidObstaclesVersion1()
+    {
+        if (!Physics.Raycast(enemy.transform.position + offsetHeight + offsetRight, enemy.transform.forward, avoidDistance, obstructionLayerMask) &&
+            !Physics.Raycast(enemy.transform.position + offsetHeight + offsetLeft, enemy.transform.forward, avoidDistance, obstructionLayerMask))
         {
-            enemy.MoveEnemyToPos(enemy.transform.position + Vector3.forward);
-        } else if(Physics.Raycast(enemy.transform.position + offset, Vector3.left , 2f, obstructionLayerMask))
-        {
-            enemy.MoveEnemyToPos(enemy.transform.position + Vector3.left);
+            enemy.MoveEnemyToPos(enemy.transform.position + enemy.transform.forward);
         }
-        else if (Physics.Raycast(enemy.transform.position + offset, Vector3.right, 2f, obstructionLayerMask))
+        else if (!Physics.Raycast(enemy.transform.position + offsetHeight + offsetForward, -enemy.transform.right, avoidDistance, obstructionLayerMask) &&
+                  !Physics.Raycast(enemy.transform.position + offsetHeight + offsetBack, -enemy.transform.right, avoidDistance, obstructionLayerMask))
         {
-            enemy.MoveEnemyToPos(enemy.transform.position + Vector3.right);
+            enemy.MoveEnemyToPos(enemy.transform.position - enemy.transform.right);
         }
-        else if (Physics.Raycast(enemy.transform.position + offset, Vector3.back, 2f, obstructionLayerMask))
+        else if (!Physics.Raycast(enemy.transform.position + offsetHeight + offsetForward, enemy.transform.right, avoidDistance, obstructionLayerMask) &&
+                 !Physics.Raycast(enemy.transform.position + offsetHeight + offsetBack, enemy.transform.right, avoidDistance, obstructionLayerMask))
         {
-            enemy.MoveEnemyToPos(enemy.transform.position + Vector3.back);
+            enemy.MoveEnemyToPos(enemy.transform.position + enemy.transform.right);
+        }
+        else
+        {
+            enemy.MoveEnemyToPos(enemy.transform.position - enemy.transform.forward);
+        }
+    }
+    */
+
+    private void AvoidObstaclesVersion2()
+    {
+        offsetRight = enemy.transform.right * 0.25f;
+        offsetLeft = -enemy.transform.right * 0.25f;
+
+        //forward
+        Debug.DrawRay(enemy.transform.position + offsetHeight + offsetRight, enemy.transform.forward * avoidDistance, Color.yellow);
+        Debug.DrawRay(enemy.transform.position + offsetHeight + offsetLeft, enemy.transform.forward * avoidDistance, Color.yellow);
+        Debug.DrawRay(enemy.transform.position + offsetHeight + offsetRight, (enemy.transform.forward + offsetRight * 2).normalized * avoidDistance, Color.yellow);
+        Debug.DrawRay(enemy.transform.position + offsetHeight + offsetLeft, (enemy.transform.forward + offsetLeft * 2).normalized * avoidDistance, Color.yellow);
+
+        // left & right
+        Debug.DrawRay(enemy.transform.position + offsetHeight, enemy.transform.right * avoidDistance, Color.yellow);
+        Debug.DrawRay(enemy.transform.position + offsetHeight, -enemy.transform.right * avoidDistance, Color.yellow);
+
+        if (
+            Physics.Raycast(enemy.transform.position + offsetHeight + offsetRight, enemy.transform.forward, avoidDistance, obstructionLayerMask) ||
+            Physics.Raycast(enemy.transform.position + offsetHeight + offsetLeft, enemy.transform.forward, avoidDistance, obstructionLayerMask) ||
+            Physics.Raycast(enemy.transform.position + offsetHeight + offsetRight, (enemy.transform.forward + offsetRight * 2).normalized, avoidDistance, obstructionLayerMask) ||
+            Physics.Raycast(enemy.transform.position + offsetHeight + offsetLeft, (enemy.transform.forward + offsetLeft * 2).normalized, avoidDistance, obstructionLayerMask)
+            )
+        {
+            bool isRightBlocked = Physics.Raycast(enemy.transform.position + offsetHeight, enemy.transform.right, avoidDistance, obstructionLayerMask);
+            bool isLeftBlocked = Physics.Raycast(enemy.transform.position + offsetHeight, -enemy.transform.right, avoidDistance, obstructionLayerMask);
+
+            enemy.TurnLeftOrRight(isRightBlocked && !isLeftBlocked);
+        } else
+        {
+            enemy.MoveEnemyToPos(enemy.transform.position + enemy.transform.forward);
         }
     }
 }

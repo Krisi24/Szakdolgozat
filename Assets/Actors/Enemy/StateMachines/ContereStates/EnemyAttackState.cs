@@ -43,7 +43,10 @@ public class EnemyAttackState : EnemyState
     {
         Attack();
         yield return new WaitForSeconds(cooldownTime);
-        if (enemy.StateMachine.CurrentEnemyState != enemy.DieState)
+        if ((enemy.StateMachine.CurrentEnemyState != enemy.DieState) &&
+            (enemy.StateMachine.CurrentEnemyState != enemy.WalkAwayState) &&
+            (enemy.StateMachine.CurrentEnemyState != enemy.DistractedState)
+            )
         {
             enemy.StateMachine.ChangeState(enemy.SearchState);
         }
