@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using Unity.Hierarchy;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEditor.PlayerSettings;
 
 public class Enemy : MonoBehaviour
 {
@@ -23,13 +25,16 @@ public class Enemy : MonoBehaviour
     public Animator anim { get; set; }
     public Rigidbody RB { get; set; }
 
-    #region avoid
+    #region avoidance
 
-    private Vector3 offsetHeight = new Vector3(0f, 0.5f, 0f);
-    private Vector3 offsetRight;
-    private Vector3 offsetLeft;
+    //private Transform playerTarget;
+    private LayerMask avoidanceMask;
+    private float avoidDistance = 1.5f;
+    private int numViewDirections = 16;
+    private float viewAngle = 180f;
+    private Vector3 hightOffset = Vector3.up;
 
-    private float avoidDistance = 1f;
+    Transform playerTransform;
 
     #endregion
 
@@ -77,6 +82,10 @@ public class Enemy : MonoBehaviour
         anim = GetComponent<Animator>();
         _navMeshAgent = GetComponent<NavMeshAgent>();
         path = new NavMeshPath();
+
+        //aviodance
+        avoidanceMask = obstructionMask + enemyLayer;
+        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
 
         if (_navMeshAgent == null)
         {
@@ -162,56 +171,159 @@ public class Enemy : MonoBehaviour
     // moves enemy to player except there is another enemy is in front of it
     public bool MoveEnemyToPlayer()
     {
-        float distance = Vector3.Distance(transform.position, PlayerTarget.transform.position);
-        Vector3 pointToLookAt = new Vector3(PlayerTarget.transform.position.x, transform.position.y, PlayerTarget.transform.position.z);
+        float distance = Vector3.Distance(transform.position, playerLastPosition);
 
-        if (distance > stopDistance)
+        if ( stopDistance < distance)
         {
-            // enemy have to move closer
-            if (AvoidEnemies())
-            {
-                // enemy didnt need to avoid enemy
-                Vector3 direction = (PlayerTarget.transform.position - transform.position).normalized;
-                transform.position += direction * speed * Time.deltaTime;
-                transform.LookAt(pointToLookAt);
-            }
+            RunToPosition(playerLastPosition);
+            /*
+            // best direction in context
+            Vector3 bestDirection = GetSteeringDirection();
+            //Debug purposes
+            Debug.DrawRay(bestDirection + transform.position, Vector3.up, Color.red);
+            DebugGetSteeringDirection();
+            // move enemy to the best direction
+            RunToPosition(transform.position + bestDirection);
+            */
             return false;
         }
         return true;
+    }
+
+    private Vector3 GetSteeringDirection()
+    {
+        // direction & danger
+        List<float> danger = new List<float>();
+        List<Vector3> directions = new List<Vector3>();
+        // angle variables
+        float angleStep = viewAngle / (numViewDirections);
+        float startAngle = -viewAngle / 2;
+        Vector3 startPos = transform.position + hightOffset;
+
+        playerLastPosition = playerTransform.position;
+
+
+        // add default angle first (direction of the player)
+        // directions
+        Vector3 playerDir = (playerLastPosition - transform.position).normalized;
+        directions.Add(playerDir);
+
+        // calculate dangerValue
+        float currentDanger = 0;
+        if (Physics.Raycast(startPos, playerDir, out RaycastHit hitf, avoidDistance, avoidanceMask))
+        {
+            // The closer the wall, the greater the danger
+            currentDanger = 1 - (hitf.distance / avoidDistance);
+        }
+        if(currentDanger == 0)
+        {
+            float currentDistance = Vector3.Distance((transform.position + playerDir), playerLastPosition);
+            currentDanger -= currentDistance;
+        }
+        danger.Add(currentDanger);
+
+
+
+        // calculate all other angle
+        for (int i = 0; i < numViewDirections; i++)
+        {
+            // directions
+            float angle = startAngle + i * angleStep;
+            Vector3 dir = Quaternion.Euler(0, angle, 0) * transform.forward;
+            directions.Add(dir);
+
+            // calculate dangerValue
+            if (Physics.Raycast(startPos, dir, out RaycastHit hit, avoidDistance, avoidanceMask))
+            {
+                // The closer the wall, the greater the danger
+                currentDanger = 1 - (hit.distance / avoidDistance);
+            }
+            if (currentDanger == 0)
+            {
+                float currentDistance = Vector3.Distance((transform.position + playerDir), playerLastPosition);
+                currentDanger -= 100 - currentDistance;
+            }
+            danger.Add(currentDanger);
+        }
+
+
+        // choose the less dangerous direction
+        // chosse the first, what is the direction of the player
+        Vector3 bestDirection = directions[0];
+        float lowestDanger = danger[0];
+
+        for (int i = 1; i < directions.Count; i++)
+        {
+            if (danger[i] < lowestDanger)
+            {
+                lowestDanger = danger[i];
+                bestDirection = directions[i];
+            }
+        }
+
+        return bestDirection;
+    }
+
+    // red line if hit something
+    // geen line if it is a good direction
+    // blue line if it is the best direction
+    private void DebugGetSteeringDirection()
+    {
+        float angleStep = viewAngle / (numViewDirections - 1);
+        float startAngle = -viewAngle / 2;
+        Vector3 startPos = transform.position + hightOffset;
+
+        for (int i = 0; i < numViewDirections; i++)
+        {
+            float angle = startAngle + i * angleStep;
+            Vector3 dir = Quaternion.Euler(0, angle, 0) * transform.forward;
+
+            if (Physics.Raycast(startPos, dir, out RaycastHit hit, avoidDistance, avoidanceMask))
+            {
+                Debug.DrawLine(startPos, hit.point, Color.red);
+            }
+            else
+            {
+                Debug.DrawLine(startPos, startPos + dir, Color.green);
+            }
+        }
+        Debug.DrawLine(startPos, startPos + GetSteeringDirection(), Color.blue);
+    }
+
+    private void RunToPosition(Vector3 goalPosition)
+    {
+        Vector3 direction = (goalPosition - transform.position).normalized;
+        transform.position += direction * speed * Time.deltaTime;
+        //transform.LookAt(goalPosition);
+
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 450 * Time.deltaTime);
     }
 
     // true -> there is no enemy ahead
     // false -> there is enemy ahead, this func. had to avoid enemy
     private bool AvoidEnemies()
     {
-        offsetRight = transform.right * 0.25f;
-        offsetLeft = -transform.right * 0.25f;
+        Vector3 offsetHeight = Vector3.up;
+
         Vector3 checkStartPos = transform.position + offsetHeight;
-        // check forward
-        if (Physics.Raycast(transform.position + offsetHeight + offsetRight, transform.forward, avoidDistance, enemyLayer) ||
-            Physics.Raycast(transform.position + offsetHeight + offsetLeft, transform.forward, avoidDistance, enemyLayer))
-        {
-            return true;
-        }
 
         float radius = avoidDistance;
         float angleStep = 15f;
-        float fullAngle = 180f;
-        List<Vector3> pointList = GetPointsAroundEnemyForward(angleStep, radius, fullAngle); // 90fok -> 6 point
-        // point order at 90 degree -> 3, 4, 2, 5, 1, 6
-
+        float fullAngle = 360f;
+        List<Vector3> pointList = GetPointsAroundEnemyForward(angleStep, radius, fullAngle);
         int[] order = GetCheckOrderForAvoidEnemies((int)angleStep, (int)fullAngle);
         
         for (int i = 0; i < order.Length; i++) {
             if(CheckPointForEnemy(checkStartPos, pointList[order[i]] + offsetHeight)) continue;
             else
             {
-                MoveEnemyToPos(pointList[order[i]]);
-                return false;
+                RunToPosition(pointList[order[i]]);
+                break;
             }
         }
         // Todo.. Refactor
-        return true;
+        return false;
     }
 
     // false -> there is no enemy
@@ -221,10 +333,10 @@ public class Enemy : MonoBehaviour
         Vector3 direction = (startPos - pointToCheck).normalized;
         if(!Physics.Raycast(startPos, direction, avoidDistance, enemyLayer))
         {
-            Debug.DrawLine(startPos, pointToCheck * avoidDistance, Color.green, 3f);
+            Debug.DrawLine(startPos, pointToCheck, Color.green, 2f);
             return false;
         }
-        Debug.DrawLine(startPos, pointToCheck * avoidDistance, Color.red, 2f);
+        Debug.DrawLine(startPos, pointToCheck, Color.red, 5f);
         return true;
     }
     private List<Vector3> GetPointsAroundEnemyForward(float angleStep, float radius, float checkAngle = 180f)
@@ -242,7 +354,7 @@ public class Enemy : MonoBehaviour
             float z = Mathf.Sin(radian) * radius;
 
             pointList.Add(transform.position + new Vector3(x, 0, z));
-            Debug.DrawRay(transform.position + new Vector3(x, 0, z), Vector3.up);
+            //Debug.DrawRay(transform.position + new Vector3(x, 0, z), Vector3.up, Color.white, 1f);
         }
 
         return pointList;

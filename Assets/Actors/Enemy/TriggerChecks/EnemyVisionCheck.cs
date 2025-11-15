@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ public class EnemyVisionCheck : MonoBehaviour
     [SerializeField] private float angle;
     [SerializeField] private LayerMask playerLayerMask;
     [SerializeField] private LayerMask obstructionLayerMask;
+    public bool drawGizmo = false;
     private Enemy enemy;
     private GameObject player;
     private Vector3  hight = new Vector3(0f, 1.5f,0f);
@@ -102,8 +104,33 @@ public class EnemyVisionCheck : MonoBehaviour
         return false;
     }
 
+    // target is visible from all direction
+    public bool TargetIsVisible()
+    {
+        Collider[] rangeCheck = Physics.OverlapSphere(transform.position, radius, playerLayerMask);
+
+        if (rangeCheck.Length != 0)
+        {
+            Vector3 eyesPosition = transform.position + hight;
+            Transform target = rangeCheck[0].transform;
+            float distance = (target.position - transform.position).magnitude;
+            Vector3 directionOfTarget = (target.position - transform.position).normalized;
+
+            if (!Physics.Raycast(eyesPosition, directionOfTarget, distance, obstructionLayerMask))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void OnDrawGizmos()
     {
+        if (!drawGizmo)
+        {
+            return;
+        }
+
         // Surrounding Gizmos
         Gizmos.color = Color.white;   
         Gizmos.DrawWireSphere(transform.position, surroundingRadius);

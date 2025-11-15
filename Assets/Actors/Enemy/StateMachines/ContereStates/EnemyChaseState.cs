@@ -1,12 +1,15 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyChaseState : EnemyState
 {
     public static event Action<Vector3, Vector3> OnNotifyAboutPlayer;
+    private EnemyVisionCheck vision;
 
     public EnemyChaseState(Enemy enemy, EnemyStateMachine enemyStateMachine) : base(enemy, enemyStateMachine)
     {
+        vision = enemy.GetComponent<EnemyVisionCheck>();
     }
 
     public override void EnterState()
@@ -24,12 +27,7 @@ public class EnemyChaseState : EnemyState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
-    }
-
-    public override void PhisicsUpdate()
-    {
-        base.PhisicsUpdate();
-        if (!enemy.isAggroed || !enemy.PlayerIsDirectlyAvailable())
+        if (!vision.TargetIsVisible())
         {
             enemy.StateMachine.ChangeState(enemy.SearchState);
             return;
@@ -38,5 +36,10 @@ public class EnemyChaseState : EnemyState
         {
             enemy.StateMachine.ChangeState(enemy.AttackState);
         }
+    }
+
+    public override void PhisicsUpdate()
+    {
+        base.PhisicsUpdate();
     }
 }
