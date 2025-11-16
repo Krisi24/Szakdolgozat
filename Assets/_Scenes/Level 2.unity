@@ -4269,6 +4269,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BoneCollectable
       objectReference: {fileID: 0}
+    - target: {fileID: 4740405957763486878, guid: 61f35411aa5c5b248b1bb9dd9f1e11ba, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -11157,6 +11161,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CoinCollectable
       objectReference: {fileID: 0}
+    - target: {fileID: 5326411979715427526, guid: 2606f376524ca61408162aed97ffaab6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6980130726291309926, guid: 2606f376524ca61408162aed97ffaab6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.07501
@@ -15406,7 +15414,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 441387766841849005, guid: 0b1b5ec8944fa2743ad41abfcfcf9b8d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.533
+      value: 0.67
       objectReference: {fileID: 0}
     - target: {fileID: 441387766841849005, guid: 0b1b5ec8944fa2743ad41abfcfcf9b8d, type: 3}
       propertyPath: m_LocalPosition.z

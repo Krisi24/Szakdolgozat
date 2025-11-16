@@ -13,13 +13,13 @@ public class RollState : PlayerState
     {
         base.EnterState();
         player.ChangeAnimation("Roll");
+        
         nextRollTime = coolDownTime + Time.time;
     }
 
     public override void ExitState()
     {
         base.ExitState();
-        player.ResetMaxLinearVelocity();
     }
 
     public override void FrameUpdate()

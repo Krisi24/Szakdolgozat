@@ -1,7 +1,5 @@
-using System;
 using TMPro;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class Hud : MonoBehaviour
 {
@@ -16,7 +14,6 @@ public class Hud : MonoBehaviour
     [SerializeField] private TMP_Text boneCounterText;
     [SerializeField] private TMP_Text coinCounterText;
 
-    private Action playerHasDied = null;
     private Enemy chosenEnemy;
 
     public static Hud instance;

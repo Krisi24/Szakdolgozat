@@ -1,8 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Windows;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class Player : MonoBehaviour, IDamagable
 {
@@ -14,7 +12,8 @@ public class Player : MonoBehaviour, IDamagable
     private Rigidbody rb;
     [SerializeField] private float runSpeed = 6f;
     [SerializeField] private float crouchSpeed = 3f;
-    [SerializeField] private float rollSpeed = 9f;
+    [SerializeField] private float rollSpeed = 7.5f;
+    private float currentSpeed;
     [SerializeField] private float rotationSpeed = 1200f;
     [SerializeField] private HealthBar healthbar;
     [SerializeField] private GameObject menu;
@@ -69,7 +68,7 @@ public class Player : MonoBehaviour, IDamagable
         rb = GetComponent<Rigidbody>();
         StateMachine.Initalize(IdleState);
         CurrentHealth = MaxHealth;
-        rb.maxLinearVelocity = runSpeed;
+        currentSpeed = runSpeed;
     }
     private void Awake()
     {
@@ -115,7 +114,7 @@ public class Player : MonoBehaviour, IDamagable
     private void OnRoll()
     {
         InputLvlTwo();
-        rb.maxLinearVelocity = rollSpeed;
+        currentSpeed = rollSpeed;
         StateMachine.ChangeState(RollState);
     }
     private void OnAttack()
@@ -128,7 +127,7 @@ public class Player : MonoBehaviour, IDamagable
         isCrouches = !isCrouches;
         if (isCrouches)
         {
-            rb.maxLinearVelocity = crouchSpeed;
+            currentSpeed = crouchSpeed;
             playerCollider.center = crouchPosition;
             playerCollider.height = 1.4f;
             if (StateMachine.CurrentPlayerState == IdleState)
@@ -142,7 +141,7 @@ public class Player : MonoBehaviour, IDamagable
         }
         else
         {
-            rb.maxLinearVelocity = runSpeed;
+            currentSpeed = runSpeed;
             playerCollider.center = standingPosition;
             playerCollider.height = 1.9f;
             if (StateMachine.CurrentPlayerState == IdleState)
@@ -290,14 +289,20 @@ public class Player : MonoBehaviour, IDamagable
     {
         return runSpeed;
     }
-    public Vector3 GetMoveInput()
-    {
-        return new Vector3(moveAction.ReadValue<Vector2>().x, 0, moveAction.ReadValue<Vector2>().y);
-    }
     public float GetCrouchSpeed()
     {
         return crouchSpeed;
     }
+    public float GetRollSpeed()
+    {
+        return rollSpeed;
+    }
+
+    public Vector3 GetMoveInput()
+    {
+        return new Vector3(moveAction.ReadValue<Vector2>().x, 0, moveAction.ReadValue<Vector2>().y);
+    }
+
     public void ResetMaxLinearVelocity()
     {
         if (isCrouches)
@@ -318,9 +323,8 @@ public class Player : MonoBehaviour, IDamagable
 
     public void Move(Vector3 direction)
     {
-        Vector3 velocity = direction * runSpeed;
-        rb.AddForce(velocity, ForceMode.VelocityChange);
-        LookDirection(velocity);
+        rb.MovePosition(transform.position + direction * currentSpeed * Time.fixedDeltaTime);
+        LookDirection(direction);
     }
 
     public void LookDirection(Vector3 velocity)

@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using Unity.Hierarchy;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEditor.PlayerSettings;
 
 public class Enemy : MonoBehaviour
 {
@@ -27,9 +25,9 @@ public class Enemy : MonoBehaviour
 
     #region avoidance
 
-    //private Transform playerTarget;
+    // private Transform playerTarget;
     private LayerMask avoidanceMask;
-    private float avoidDistance = 1.5f;
+    private float avoidDistance = 1.75f;
     private int numViewDirections = 16;
     private float viewAngle = 180f;
     private Vector3 hightOffset = Vector3.up;
@@ -175,8 +173,8 @@ public class Enemy : MonoBehaviour
 
         if ( stopDistance < distance)
         {
-            RunToPosition(playerLastPosition);
-            /*
+            //RunToPosition(playerLastPosition); // previous solution
+            
             // best direction in context
             Vector3 bestDirection = GetSteeringDirection();
             //Debug purposes
@@ -184,7 +182,7 @@ public class Enemy : MonoBehaviour
             DebugGetSteeringDirection();
             // move enemy to the best direction
             RunToPosition(transform.position + bestDirection);
-            */
+            
             return false;
         }
         return true;
@@ -199,61 +197,79 @@ public class Enemy : MonoBehaviour
         float angleStep = viewAngle / (numViewDirections);
         float startAngle = -viewAngle / 2;
         Vector3 startPos = transform.position + hightOffset;
-
         playerLastPosition = playerTransform.position;
-
-
-        // add default angle first (direction of the player)
-        // directions
         Vector3 playerDir = (playerLastPosition - transform.position).normalized;
-        directions.Add(playerDir);
-
-        // calculate dangerValue
-        float currentDanger = 0;
-        if (Physics.Raycast(startPos, playerDir, out RaycastHit hitf, avoidDistance, avoidanceMask))
-        {
-            // The closer the wall, the greater the danger
-            currentDanger = 1 - (hitf.distance / avoidDistance);
-        }
-        if(currentDanger == 0)
-        {
-            float currentDistance = Vector3.Distance((transform.position + playerDir), playerLastPosition);
-            currentDanger -= currentDistance;
-        }
-        danger.Add(currentDanger);
 
 
-
-        // calculate all other angle
+        float bestDangerValue = 0;
+        // Calculate Direction and Danger for different directions
         for (int i = 0; i < numViewDirections; i++)
         {
-            // directions
+            // calculate direction
             float angle = startAngle + i * angleStep;
             Vector3 dir = Quaternion.Euler(0, angle, 0) * transform.forward;
             directions.Add(dir);
 
             // calculate dangerValue
+            float currentDanger = 0;
             if (Physics.Raycast(startPos, dir, out RaycastHit hit, avoidDistance, avoidanceMask))
             {
                 // The closer the wall, the greater the danger
-                currentDanger = 1 - (hit.distance / avoidDistance);
-            }
-            if (currentDanger == 0)
-            {
-                float currentDistance = Vector3.Distance((transform.position + playerDir), playerLastPosition);
-                currentDanger -= 100 - currentDistance;
+                currentDanger = 1f - (hit.distance / avoidDistance);
             }
             danger.Add(currentDanger);
+            //Debug.Log("agnleIndex: " + i + "new danger value: " + currentDanger);
         }
 
+        // Calculate Direction and Danger for the player directly
+        directions.Add(playerDir);
+        if (Physics.Raycast(startPos, playerDir, out RaycastHit hitf, avoidDistance, avoidanceMask))
+        {
+            // The closer the wall, the greater the danger
+            float currentDanger = 1 - (hitf.distance / avoidDistance);
+            danger.Add(currentDanger);
+        } else
+        {
+            danger.Add(0);
+        }
 
+            //moving avereage
+         danger = MovingAverage(danger);
+        // choose best value
+        bestDangerValue = Mathf.Infinity;
+        for (int i = 0; i < danger.Count; i++)
+        {
+            //Debug.Log("danger index:" + i + " value:" + danger[i]);
+            if( bestDangerValue > danger[i])
+            {
+                bestDangerValue = danger[i];
+            }
+        }
+        //Debug.Log("best danger value: " + bestDangerValue);
+        //Debug.Log("danger.Count: " + danger.Count + " directions.Count: " + directions.Count);
+
+        // calculate best distance from play for the best danger values
+        for (int i = 0; i < danger.Count; i++)
+        {
+            if (danger[i] == bestDangerValue)
+            {
+                float distance = Vector3.Distance((transform.position + directions[i]), playerLastPosition) / 100f;
+                danger[i] = danger[i] + distance;
+                //Debug.Log("danger index:" + i + " value:" + danger[i] + " distance value: " + distance);
+            } else
+            {
+                danger[i] = danger[i] + 1f;
+            }
+        }
+        
         // choose the less dangerous direction
-        // chosse the first, what is the direction of the player
         Vector3 bestDirection = directions[0];
         float lowestDanger = danger[0];
+        //Debug.Log("danger index:" + 0 + " value:" + danger[0]);
 
         for (int i = 1; i < directions.Count; i++)
         {
+            //Debug.Log("danger index:" + i + " value:" + danger[i]);
             if (danger[i] < lowestDanger)
             {
                 lowestDanger = danger[i];
@@ -262,6 +278,40 @@ public class Enemy : MonoBehaviour
         }
 
         return bestDirection;
+    }
+
+    // creates a moving avereage from the given list
+    // the new list has the same number of elements as the original
+    // average value calculated from the the actual value and the two-two neighboring values
+    private List<float> MovingAverage(List<float> list)
+    {
+        List<float> resultList = new List<float>();
+        // basic condicion check
+        if(list.Count < 2)
+        {
+            Debug.LogWarning("The list contains only 2 value, therefore there is no reason creating a moving average!");
+            return list;
+        }
+        // creating movingaverage
+
+        // calculate movingAverage list
+        for (int i = 0; i < list.Count; i++)
+        {
+            int averageCounter = 0;
+            float tempValue = 0;
+            for(int j = -2; j < 3; j++)
+            {
+                int tempIndex = (j + i);
+                if (  tempIndex > 0 && tempIndex < list.Count )
+                {
+                    averageCounter++;
+                    tempValue += list[tempIndex];
+                }
+            }   
+            resultList.Add(tempValue / averageCounter);
+        }
+
+        return resultList;
     }
 
     // red line if hit something
@@ -426,9 +476,7 @@ public class Enemy : MonoBehaviour
         if (distance > 0.5f)
         {
             Vector3 direction = (position - transform.position).normalized;
-
             transform.position += direction * speed * Time.deltaTime;
-
             transform.LookAt(new Vector3(position.x, transform.position.y, position.z));
 
             return false;
@@ -472,9 +520,8 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        // Visszaadjuk az aktuális cél sarokpontot.
+        // return current/next cornerIndex
         return path.corners[currentCornerIndex];
-
     }
 
     public void XrayOn()

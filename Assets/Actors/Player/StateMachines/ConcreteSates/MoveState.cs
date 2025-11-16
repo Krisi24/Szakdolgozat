@@ -34,7 +34,7 @@ public class MoveState : PlayerState
         base.PhisicsUpdate();
         if (player.GetMoveInput() != Vector3.zero)
         {
-            player.Move(player.GetMoveInput());
+            player.Move(player.GetMoveInput().normalized);
         } else
         {
             player.StateMachine.ChangeState(player.IdleState);
