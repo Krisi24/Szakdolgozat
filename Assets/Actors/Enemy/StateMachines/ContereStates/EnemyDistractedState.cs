@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class EnemyDistractedState : EnemyState
 {
     private GameObject distractionObject;

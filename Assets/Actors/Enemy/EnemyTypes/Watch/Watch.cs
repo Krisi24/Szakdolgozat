@@ -1,17 +1,16 @@
 using System;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class Watch : MonoBehaviour
 {
-    public float orbitSpeed = 0.5f; // Sebesség, amellyel a spotlámpa kering
-    public float xAxisRadius = 5f; // Az ellipszis X tengely sugara
-    public float yAxisRadius = 3f; // Az ellipszis Y tengely sugara
+    public float orbitSpeed = 0.5f;
+    public float xAxisRadius = 5f;
+    public float yAxisRadius = 3f;
 
     [Header("Detektáló gömb beállításai")]
-    public float detectionSphereRadius = 1f; // A detektáló gömb sugara
-    public float detectionSphereDistance = 8f; // A detektáló gömb távolsága a spotlámpától az elõre irányban
-    public LayerMask hitLayers; // Választható layerek az OverlapSphere számára
+    public float detectionSphereRadius = 1f;
+    public float detectionSphereDistance = 8f;
+    public LayerMask hitLayers;
     public static event Action<Vector3, Vector3> OnNotifyAboutPlayer;
 
     [Header("Enemy Spawner")]
@@ -21,10 +20,10 @@ public class Watch : MonoBehaviour
 
     private Light spotLight;
 
-    // Változók a Sphere Gizmo-hoz
+    // Sphere Gizmo
     private Vector3 gizmoSphereCenter;
     private float gizmoSphereRadius;
-    private Collider[] detectedColliders; // Tárolja a detektált collider-eket
+    private Collider[] detectedColliders;
     private bool gizmoSphereDetected;
 
     void Start()
@@ -47,21 +46,16 @@ public class Watch : MonoBehaviour
     {
         if (spotLight == null) return;
 
-        // Kiszámítja az aktuális idõ alapján az ellipszis pozícióját
         float angle = Time.time * orbitSpeed;
         float x = Mathf.Cos(angle) * xAxisRadius;
         float y = Mathf.Sin(angle) * yAxisRadius;
 
-        // Beállítja a spotlámpa helyi pozícióját az ellipszis mentén
         spotLight.transform.localPosition = new Vector3(x, 0, y);
 
-        // A detektáló gömb középpontjának számítása:
-        // A spotlámpa pozíciójából kiindulva, a spotlámpa elõre irányában eltolva a detectionSphereDistance-el
+        // detection spehere middle point
         gizmoSphereCenter = spotLight.transform.position + spotLight.transform.forward * detectionSphereDistance;
         gizmoSphereRadius = detectionSphereRadius;
 
-        // OverlapSphere-rel ellenõrzi, hogy mit érint a gömb
-        // A '10' itt a maximális collider szám, amit visszaadhat
         detectedColliders = Physics.OverlapSphere(gizmoSphereCenter, gizmoSphereRadius, hitLayers);
 
         if (detectedColliders.Length > 0)
@@ -76,7 +70,7 @@ public class Watch : MonoBehaviour
                     Instantiate(enemyPrefab, tempPos, spawnPointObj.transform.rotation);
                 }
                 spawnCount = 0;
-                Debug.Log($"A detektáló gömb érintkezik: {col.name}");
+                //Debug.Log($"Detection collided with: {col.name}");
                 OnNotifyAboutPlayer?.Invoke(gizmoSphereCenter, gizmoSphereCenter);
             }
         }
@@ -90,7 +84,7 @@ public class Watch : MonoBehaviour
     {
         if (!enabled || spotLight == null) return;
 
-        // Ellipszis rajzolása (sárga)
+        // ellipse - yellow
         Gizmos.color = Color.yellow;
         Vector3 previousPoint = Vector3.zero;
         for (int i = 0; i <= 50; i++)
@@ -106,21 +100,20 @@ public class Watch : MonoBehaviour
             }
             previousPoint = currentPoint;
         }
-        Gizmos.DrawLine(previousPoint, transform.position + new Vector3(xAxisRadius, 0, 0)); // Zárja be az ellipszist
+        Gizmos.DrawLine(previousPoint, transform.position + new Vector3(xAxisRadius, 0, 0)); // close ellipse
 
-        // Detektáló gömb rajzolása
-        // Rajzoljuk ki mindig, hogy lássuk a pozícióját és méretét a szerkesztõben is
+        // detection sphere
         if (gizmoSphereDetected)
         {
-            // Ha valamit detektált, zöld színnel rajzoljuk a gömböt
+            // detected -> green
             Gizmos.color = Color.green;
         }
         else
         {
-            // Ha nem detektált semmit, piros színnel rajzoljuk a gömböt
+            // didnt detect -> red
             Gizmos.color = Color.red;
         }
-        // Rajzoljunk egy tömör gömböt, ha van detektálás, különben csak drótvázat
+
         if (Application.isPlaying && gizmoSphereDetected)
         {
             Gizmos.DrawSphere(gizmoSphereCenter, gizmoSphereRadius);
@@ -130,11 +123,10 @@ public class Watch : MonoBehaviour
             Gizmos.DrawWireSphere(gizmoSphereCenter, gizmoSphereRadius);
         }
 
-
-        // Ha volt detektálás, rajzoljuk ki a detektált objektumokat is
+        // draw detected obj. -> blue
         if (Application.isPlaying && gizmoSphereDetected && detectedColliders != null)
         {
-            Gizmos.color = Color.blue; // Kék színnel jelöljük a detektált objektumokat
+            Gizmos.color = Color.blue;
             foreach (Collider col in detectedColliders)
             {
                 if (col != null)

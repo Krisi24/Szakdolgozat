@@ -24,7 +24,6 @@ public class EnemyAttackState : EnemyState
 
     public override void ExitState()
     {
-        //Debug.Log("Exit Attack State");
         base.ExitState();
     }
 

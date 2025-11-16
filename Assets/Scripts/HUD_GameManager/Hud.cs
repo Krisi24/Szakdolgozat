@@ -30,6 +30,8 @@ public class Hud : MonoBehaviour
         }
 
         Player.PlayerHasDied += ShowTextLoseMessage;
+        OpenDoor.ShowToolTip += ShowInteractionText;
+        OpenDoor.HideToolTip += HideInteractionText;
     }
     private void Start()
     {
@@ -43,6 +45,22 @@ public class Hud : MonoBehaviour
     private void OnDestroy()
     {
         Player.PlayerHasDied -= ShowTextLoseMessage;
+        OpenDoor.ShowToolTip -= ShowInteractionText;
+        OpenDoor.HideToolTip -= HideInteractionText;
+    }
+
+    private void OnDisable()
+    {
+        Player.PlayerHasDied -= ShowTextLoseMessage;
+        OpenDoor.ShowToolTip -= ShowInteractionText;
+        OpenDoor.HideToolTip -= HideInteractionText;
+    }
+
+    private void OnEnable()
+    {
+        Player.PlayerHasDied += ShowTextLoseMessage;
+        OpenDoor.ShowToolTip += ShowInteractionText;
+        OpenDoor.HideToolTip += HideInteractionText;
     }
 
     private void UpdateTimer()

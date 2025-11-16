@@ -1,13 +1,11 @@
-using System.Runtime.InteropServices;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class EnemyPatrolState : EnemyState
 {
-
     private Vector3 patrolEndpoint;
     private Vector3 patrolStartpoint;
     private bool isMovingBack = false;
+
     public EnemyPatrolState(Enemy enemy, EnemyStateMachine enemyStateMachine, Vector3 patrolEndpoint) : base(enemy, enemyStateMachine)
     {
         patrolStartpoint = enemy.transform.position;
@@ -22,7 +20,7 @@ public class EnemyPatrolState : EnemyState
         isMovingBack = false;
         enemy.ChangeAnimation("Walking");
 
-        // Debug
+        // For Debugging
         Debug.DrawRay(patrolStartpoint, Vector3.up, Color.blue, 10f);
         Debug.DrawRay(patrolEndpoint, Vector3.up, Color.cyan, 10f);
     }

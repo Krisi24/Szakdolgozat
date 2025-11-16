@@ -8,17 +8,9 @@ public class Dog : MonoBehaviour
         this.enemy = GetComponent<Enemy>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void Distract(GameObject distrtactionObject)
     {
         gameObject.GetComponent<EnemyVisionCheck>().enabled = false;
         enemy.GetDistracted(distrtactionObject); 
     }
-
-
 }

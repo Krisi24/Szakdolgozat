@@ -4,7 +4,6 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour, IDamagable
 {
-
     public GameObject noBoneSignal;
     public GameObject bone;
     public Transform rightHandTransform;
@@ -157,6 +156,11 @@ public class Player : MonoBehaviour, IDamagable
     private void OnMove()
     {
         InputLvlZero();
+        // reset velocity
+        if (rb.linearVelocity.x > 0 || rb.linearVelocity.z > 0)
+        {
+            rb.linearVelocity = Vector3.zero;
+        }
         StateMachine.ChangeState(MoveState);
     }
     private void OnSpecialMove()
@@ -201,7 +205,6 @@ public class Player : MonoBehaviour, IDamagable
                 Hud.instance.ShowPayOffIntecractionMenu(surroundingCheck[0].GetComponent<Enemy>());
             }
         }
-
     }
     public void SetInteractive(Activate newInteractive)
     {
@@ -267,8 +270,6 @@ public class Player : MonoBehaviour, IDamagable
         {
             Debug.LogError("HealthSlider is not assigned in the Inspector!");
         }
-
-        
     }
 
     public void ChangeAnimation(string animation)

@@ -1,17 +1,5 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-
-/*
-[System.Serializable]
-public class GroundColliderRow: List<BoxCollider>
-{
-    public List<BoxCollider> rowColliders = new List<BoxCollider>();
-}*/
-
-/*
- Boxcollider csoportonként egy helyen spawnol egy Objektumot
- */
 
 public class CollectableSpawner : MonoBehaviour
 {
@@ -75,21 +63,9 @@ public class CollectableSpawner : MonoBehaviour
             BoxCollider currentCollider = colliderList[Random.Range(0, colliderAmount)];
             Vector3 spawnPos = RandomPointInBounds(currentCollider.bounds);
 
-            /*
-            Renderer prefabRenderer = objPrefab.GetComponent<Renderer>();
-            if (prefabRenderer != null)
-            {
-                spawnPos.y = currentCollider.bounds.min.y + prefabRenderer.bounds.extents.y;
-            }
-            else
-            {
-                spawnPos.y = currentCollider.bounds.min.y + 1f;
-            } */
-
             Instantiate(objPrefab, spawnPos, Quaternion.identity, transform);
         }
     }
-
 
     // returns a random point in the bounds
     public static Vector3 RandomPointInBounds(Bounds bounds)

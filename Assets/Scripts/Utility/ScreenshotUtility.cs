@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using System.IO;
 using UnityEngine.InputSystem;
 
@@ -8,10 +7,12 @@ public class ScreenshotUtility : MonoBehaviour
     public static ScreenshotUtility screenShotUtility;
 
     #region Public Variables
+
     public bool runOnlyInEditor = true;
     public string m_ScreenshotKey = "k";
     public int m_ScaleFactor = 1;
     public bool includeImageSizeInFilename = true;
+
     #endregion
 
     [SerializeField] private int m_ImageCount = 0;

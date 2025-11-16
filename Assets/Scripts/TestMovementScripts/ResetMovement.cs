@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class ResetMovement : MonoBehaviour
 {
@@ -9,7 +8,6 @@ public class ResetMovement : MonoBehaviour
         startingPosition = transform.position;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKey(KeyCode.Space))

@@ -147,16 +147,16 @@ public class EnemyVisionCheck : MonoBehaviour
             Vector3 forwardDirection = transform.forward;
             float angleToTarget = Vector3.Angle(forwardDirection, directionOfTarget);
 
-            // elõre mutató egyenes
+            // forward ray
             Gizmos.color = Color.blue;
             Gizmos.DrawRay(transform.position, forwardDirection * radius);
 
-            // körív
+            // arc
             Handles.color = Color.yellow;
             Vector3 fromDirection = Quaternion.AngleAxis(-angle / 2, transform.up) * forwardDirection;
             Handles.DrawWireArc(transform.position, transform.up, fromDirection, angle, radius);
 
-            // látószög szélei
+            // arc edges
             Vector3 rightDirection = Quaternion.AngleAxis(angle / 2, transform.up) * forwardDirection;
             Gizmos.DrawRay(transform.position, fromDirection * radius);
             Gizmos.DrawRay(transform.position, rightDirection * radius);

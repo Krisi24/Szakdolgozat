@@ -19,7 +19,6 @@ public class AddSpeedToUI : MonoBehaviour
         moveDirection = moveDirection.normalized;
     }
 
-    // Update is called once per frame
     void Update()
     {
         rectTransform.anchoredPosition += moveDirection * speed * Time.deltaTime;

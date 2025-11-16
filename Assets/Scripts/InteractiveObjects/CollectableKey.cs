@@ -7,7 +7,6 @@ public class CollectableKey : MonoBehaviour
     public float rotationSpeedX = 0f;
     public MonoBehaviour activatableTarget = null;
     private Activate activationInterface = null;
-
     void Start()
     {
         if (activatableTarget != null)
@@ -55,6 +54,4 @@ public class CollectableKey : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-
 }

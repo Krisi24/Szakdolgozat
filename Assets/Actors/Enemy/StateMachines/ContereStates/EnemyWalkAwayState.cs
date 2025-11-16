@@ -28,36 +28,10 @@ public class EnemyWalkAwayState : EnemyState
 
     public override void PhisicsUpdate()
     {
-        //AvoidObstaclesVersion1();
-        AvoidObstaclesVersion2();
+        AvoidObstacles();
     }
 
-    /*
-    private void AvoidObstaclesVersion1()
-    {
-        if (!Physics.Raycast(enemy.transform.position + offsetHeight + offsetRight, enemy.transform.forward, avoidDistance, obstructionLayerMask) &&
-            !Physics.Raycast(enemy.transform.position + offsetHeight + offsetLeft, enemy.transform.forward, avoidDistance, obstructionLayerMask))
-        {
-            enemy.MoveEnemyToPos(enemy.transform.position + enemy.transform.forward);
-        }
-        else if (!Physics.Raycast(enemy.transform.position + offsetHeight + offsetForward, -enemy.transform.right, avoidDistance, obstructionLayerMask) &&
-                  !Physics.Raycast(enemy.transform.position + offsetHeight + offsetBack, -enemy.transform.right, avoidDistance, obstructionLayerMask))
-        {
-            enemy.MoveEnemyToPos(enemy.transform.position - enemy.transform.right);
-        }
-        else if (!Physics.Raycast(enemy.transform.position + offsetHeight + offsetForward, enemy.transform.right, avoidDistance, obstructionLayerMask) &&
-                 !Physics.Raycast(enemy.transform.position + offsetHeight + offsetBack, enemy.transform.right, avoidDistance, obstructionLayerMask))
-        {
-            enemy.MoveEnemyToPos(enemy.transform.position + enemy.transform.right);
-        }
-        else
-        {
-            enemy.MoveEnemyToPos(enemy.transform.position - enemy.transform.forward);
-        }
-    }
-    */
-
-    private void AvoidObstaclesVersion2()
+    private void AvoidObstacles()
     {
         offsetRight = enemy.transform.right * 0.25f;
         offsetLeft = -enemy.transform.right * 0.25f;

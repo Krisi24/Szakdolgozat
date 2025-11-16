@@ -1,6 +1,3 @@
-using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
-
 public class EnemySearchState : EnemyState
 {
     public EnemySearchState(Enemy enemy, EnemyStateMachine enemyStateMachine) : base(enemy, enemyStateMachine)

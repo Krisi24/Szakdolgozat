@@ -1,6 +1,5 @@
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
 
 public class Countdown : MonoBehaviour
 {
@@ -14,9 +13,7 @@ public class Countdown : MonoBehaviour
     [SerializeField] private TMP_Text collectableCounterText;
     [SerializeField] private TMP_Text collectableCounterText2;
     private int collectableCounter = 0;
-    private int collectableCounter2 = 0;
     private int collectableCollectedCounter = 0;
-    private int collectableCollectedCounter2 = 0;
     [SerializeField] private string collectableName;
 
     private void Awake()

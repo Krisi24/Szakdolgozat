@@ -921,7 +921,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <MaxHealth>k__BackingField: 100
-  stopDistance: 2
+  stopDistance: 1.5
   speed: 7.5
   notificationDistance: 30
   patrolEndpoint: {fileID: 0}
@@ -956,6 +956,7 @@ MonoBehaviour:
   obstructionLayerMask:
     serializedVersion: 2
     m_Bits: 64
+  drawGizmo: 0
 --- !u!195 &2192994418679346968
 NavMeshAgent:
   m_ObjectHideFlags: 0

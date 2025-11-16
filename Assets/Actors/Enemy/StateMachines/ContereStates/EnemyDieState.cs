@@ -16,7 +16,6 @@ public class EnemyDieState : EnemyState
     public override void ExitState()
     {
         base.ExitState();
-        //Debug.Log("Exit Die State");
     }
 
     public override void FrameUpdate()

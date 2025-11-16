@@ -25,12 +25,11 @@ public class Enemy : MonoBehaviour
 
     #region avoidance
 
-    // private Transform playerTarget;
     private LayerMask avoidanceMask;
     private float avoidDistance = 1.75f;
     private int numViewDirections = 16;
     private float viewAngle = 180f;
-    private Vector3 hightOffset = Vector3.up;
+    private Vector3 hightOffset = new Vector3(0f, 0.4f, 0f);
 
     Transform playerTransform;
 
@@ -67,7 +66,6 @@ public class Enemy : MonoBehaviour
         SearchState = new EnemySearchState(this, StateMachine);
         WalkAwayState = new EnemyWalkAwayState(this, StateMachine);
         PlayerTarget = GameObject.FindGameObjectWithTag("Player");
-
 
         EnemyChaseState.OnNotifyAboutPlayer += GoAfterPlayer;
         Watch.OnNotifyAboutPlayer += GoAfterPlayer;
@@ -344,8 +342,6 @@ public class Enemy : MonoBehaviour
     {
         Vector3 direction = (goalPosition - transform.position).normalized;
         transform.position += direction * speed * Time.deltaTime;
-        //transform.LookAt(goalPosition);
-
         Quaternion targetRotation = Quaternion.LookRotation(direction);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 450 * Time.deltaTime);
     }

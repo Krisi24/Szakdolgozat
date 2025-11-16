@@ -1,4 +1,3 @@
-
 public class EnemyStateMachine
 {
     public EnemyState CurrentEnemyState { get; set; }

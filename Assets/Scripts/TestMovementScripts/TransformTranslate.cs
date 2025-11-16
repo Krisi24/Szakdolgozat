@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class TransformTranslate : MonoBehaviour
 {
@@ -8,7 +7,6 @@ public class TransformTranslate : MonoBehaviour
     [SerializeField] private Vector3 velocity = new Vector3(1f, 0f, 0f);
 
     private Collider playerCollider;
-
     private void Awake()
     {
         playerCollider = GetComponent<Collider>();
