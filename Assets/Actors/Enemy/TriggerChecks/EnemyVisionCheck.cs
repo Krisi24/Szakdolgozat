@@ -1,11 +1,8 @@
-using System.Collections;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
 public class EnemyVisionCheck : MonoBehaviour
 {
-
     [SerializeField] private float radius = 20f;
     [SerializeField] private float surroundingRadius = 1.5f;
     [SerializeField] private float angle;
@@ -152,9 +149,11 @@ public class EnemyVisionCheck : MonoBehaviour
             Gizmos.DrawRay(transform.position, forwardDirection * radius);
 
             // arc
-            Handles.color = Color.yellow;
             Vector3 fromDirection = Quaternion.AngleAxis(-angle / 2, transform.up) * forwardDirection;
+            /*
+            Handles.color = Color.yellow;
             Handles.DrawWireArc(transform.position, transform.up, fromDirection, angle, radius);
+            */
 
             // arc edges
             Vector3 rightDirection = Quaternion.AngleAxis(angle / 2, transform.up) * forwardDirection;

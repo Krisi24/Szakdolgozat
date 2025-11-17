@@ -7,7 +7,6 @@ public class Player : MonoBehaviour, IDamagable
     public GameObject noBoneSignal;
     public GameObject bone;
     public Transform rightHandTransform;
-
     private Rigidbody rb;
     [SerializeField] private float runSpeed = 6f;
     [SerializeField] private float crouchSpeed = 3f;
@@ -20,21 +19,13 @@ public class Player : MonoBehaviour, IDamagable
     public float MaxHealth { get; set; } = 500f;
     public float CurrentHealth { get; set; }
     private bool isCrouches = false;
-
     private CapsuleCollider playerCollider;
     private Vector3 crouchPosition = new Vector3(0f, 0.65f, 0f);
     private Vector3 standingPosition = new Vector3(0f, 0.85f, 0f);
-
     private Animator anim;
     private string currentAnimation = "";
-
     private Activate interactive;
-
-    #region 
-
     public static event Action PlayerHasDied;
-
-    #endregion
 
     #region Input Actions
 
@@ -314,6 +305,7 @@ public class Player : MonoBehaviour, IDamagable
             rb.maxLinearVelocity = runSpeed;
         }
     }
+
     #endregion
 
     public void Die()
@@ -333,7 +325,6 @@ public class Player : MonoBehaviour, IDamagable
         Quaternion toRotation = Quaternion.LookRotation(velocity, Vector3.up);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
     }
-
     public void SpawnThroable()
     {
         // velocity
@@ -347,5 +338,4 @@ public class Player : MonoBehaviour, IDamagable
         Vector3 randomTorque = UnityEngine.Random.insideUnitSphere * spinForce;
         newBoneRB.AddTorque(randomTorque, ForceMode.VelocityChange);
     }
-
 }
