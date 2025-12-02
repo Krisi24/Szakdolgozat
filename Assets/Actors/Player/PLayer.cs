@@ -89,7 +89,7 @@ public class Player : MonoBehaviour, IDamagable
     private void FixedUpdate()
     {
         StateMachine.CurrentPlayerState.PhisicsUpdate();
-
+        FixVelocity();
     }
     #endregion
 
@@ -147,11 +147,6 @@ public class Player : MonoBehaviour, IDamagable
     private void OnMove()
     {
         InputLvlZero();
-        // reset velocity
-        if (rb.linearVelocity.x > 0 || rb.linearVelocity.z > 0)
-        {
-            rb.linearVelocity = Vector3.zero;
-        }
         StateMachine.ChangeState(MoveState);
     }
     private void OnSpecialMove()
@@ -269,6 +264,14 @@ public class Player : MonoBehaviour, IDamagable
         {
             currentAnimation = animation;
             anim.CrossFadeInFixedTime(animation, 0.2f);
+        }
+    }
+
+    public void FixVelocity()
+    {
+        if (rb.linearVelocity.x > 0 || rb.linearVelocity.z > 0)
+        {
+            rb.linearVelocity = Vector3.zero;
         }
     }
 

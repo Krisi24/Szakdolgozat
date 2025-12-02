@@ -16,7 +16,7 @@ public class TransformTranslate : MonoBehaviour
     {
         Vector3 tmpVelocity = velocity;
         // simple collision detection
-        if(Physics.Raycast(new Vector3(playerCollider.bounds.max.x, playerCollider.bounds.center.y, playerCollider.bounds.center.z), transform.right, 0.15f, wallMask))
+        if (Physics.Raycast(new Vector3(playerCollider.bounds.max.x, playerCollider.bounds.center.y, playerCollider.bounds.center.z), transform.right, 0.15f, wallMask))
         {
             tmpVelocity.x = 0f;
         }

@@ -149,7 +149,13 @@ public class Enemy : MonoBehaviour
             return;
         }
         playerLastPosition = playerPos;
-        StateMachine.ChangeState(SearchState);
+        if (StateMachine.CurrentEnemyState == null) {
+            StateMachine.Initalize(SearchState);
+        }
+        else
+        {
+            StateMachine.ChangeState(SearchState);
+        }
     }
 
     public bool PlayerIsDirectlyAvailable()
@@ -482,6 +488,10 @@ public class Enemy : MonoBehaviour
 
     public void SetRoute()
     {
+        if(path == null)
+        {
+            path = new NavMeshPath();
+        }
         NavMesh.CalculatePath(transform.position, playerLastPosition, NavMesh.AllAreas, path);
         currentCornerIndex = 1;
     }
@@ -548,10 +558,13 @@ public class Enemy : MonoBehaviour
     {
         if (animation != currentAnimation)
         {
+            if (anim == null)
+            {
+                anim = GetComponent<Animator>();
+            }
             currentAnimation = animation;
-            anim.CrossFadeInFixedTime(animation, 0.2f);
+            anim.CrossFadeInFixedTime(currentAnimation, 0.2f);
         }
-
     }
 
     public void newPatrolPoint()
