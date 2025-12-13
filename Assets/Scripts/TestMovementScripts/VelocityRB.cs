@@ -11,7 +11,7 @@ public class VelocityRB : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (Input.GetKey("d"))
         {

@@ -150,10 +150,10 @@ public class EnemyVisionCheck : MonoBehaviour
 
             // arc
             Vector3 fromDirection = Quaternion.AngleAxis(-angle / 2, transform.up) * forwardDirection;
-            /*
+            
             Handles.color = Color.yellow;
             Handles.DrawWireArc(transform.position, transform.up, fromDirection, angle, radius);
-            */
+            
 
             // arc edges
             Vector3 rightDirection = Quaternion.AngleAxis(angle / 2, transform.up) * forwardDirection;

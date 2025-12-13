@@ -101,17 +101,20 @@ public class Player : MonoBehaviour, IDamagable
         Time.timeScale = 0;
         menu.SetActive(true);
     }
+
     private void OnRoll()
     {
         InputLvlTwo();
         currentSpeed = rollSpeed;
         StateMachine.ChangeState(RollState);
     }
+
     private void OnAttack()
     {
         InputLvlOne();
         StateMachine.ChangeState(AttackState);
     }
+
     private void OnCrouch()
     {
         isCrouches = !isCrouches;
@@ -144,11 +147,13 @@ public class Player : MonoBehaviour, IDamagable
             }
         }
     }
+
     private void OnMove()
     {
         InputLvlZero();
         StateMachine.ChangeState(MoveState);
     }
+
     private void OnSpecialMove()
     {
         if (GameManager.instance.GetAvaiableBones() > 0)
